@@ -1703,7 +1703,8 @@ public class SiteAction extends PagedResourceActionII {
 						if (SiteService.allowRemoveSite(id)) {
 							try {
 								// check whether site exists
-								Site removeSite = SiteService.getSite(id);
+
+                                                          Site removeSite = SiteService.getSite(id);
 								remove.add(removeSite);
 							} catch (IdUnusedException e) {
 								M_log.warn(this + "buildContextForTemplate chef_site-siteDeleteConfirm.vm - IdUnusedException " + id + e.getMessage());
@@ -1871,6 +1872,13 @@ public class SiteAction extends PagedResourceActionII {
 					}
 				}
 				
+                                // Fields added by NYU
+                                for (String property : new String[] { "School", "Department", "Location" }) {
+                                  if (siteProperties.getProperty(property) != null) {
+                                    context.put("site" + property, siteProperties.getProperty(property));
+                                  }
+                                }
+
 				context.put("siteFriendlyUrls", getSiteUrlsForSite(site));
 				context.put("siteDefaultUrl", getDefaultSiteUrl(siteId));
 				
