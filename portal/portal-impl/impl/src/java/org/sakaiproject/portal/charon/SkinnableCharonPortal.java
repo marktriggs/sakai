@@ -1877,8 +1877,13 @@ public class SkinnableCharonPortal extends HttpServlet implements Portal
 			rcontext.put("bottomNavServiceVersion", serviceVersion);
 			rcontext.put("bottomNavSakaiVersion", sakaiVersion);
 			rcontext.put("bottomNavKernelVersion", kernelVersion);
-			rcontext.put("bottomNavServer", server);
 
+			String sanitizedServer = ServerConfigurationService.getString("nyu.serveralias."+server);
+			if (sanitizedServer != null) {
+				rcontext.put("bottomNavServer", sanitizedServer);
+			} else {
+				rcontext.put("bottomNavServer", server);
+			}
 
 			Session session = SessionManager.getCurrentSession();
                         TimeZone timeZone;
