@@ -635,6 +635,7 @@ function browserSafeDocHeight() {
 	return Math.max(winHeight,docHeight); 
 }
 
+
 function supports_history_api() {
 	return !!(window.history && history.pushState);
 }
@@ -647,3 +648,15 @@ function disableBackButton() {
 		});
 	}
 }
+
+
+// CLASSES-1049 On document.onload, add allowfullscreen to all iframes so that fullscreen on media elements play nice
+var tmpOnLoad =window.onload ? window.onload : null;
+window.onload=function() {
+  var iframes = document.getElementsByTagName("iframe")
+  for (var i=0; i<iframes.length; i++) {
+    iframes[i].setAttribute("allowfullscreen","true");
+  }
+  if (tmpOnLoad) tmpOnLoad();
+};
+
