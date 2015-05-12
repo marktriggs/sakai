@@ -12,6 +12,11 @@ import java.util.logging.Logger;
 
 import org.flywaydb.core.Flyway;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.sakaiproject.pasystem.impl.banners.BannerAlert;
+import org.sakaiproject.pasystem.impl.banners.BannerSystem;
+
 class PASystemImpl implements PASystem {
 
     public void init() {
@@ -22,9 +27,7 @@ class PASystemImpl implements PASystem {
 
     public void destroy() {}
 
-    public String getFooter() {
-        return "<blink>PANTS</blink>";
-    }
+    public String getFooter() { return "<blink>PANTS</blink>"; }
 
     private void runDBMigration(final String vendor) {
 
@@ -54,5 +57,21 @@ class PASystemImpl implements PASystem {
         try {
             migrationRunner.join();
         } catch (InterruptedException e) {}
+    }
+
+    private String getActiveBannersJSON() {
+        BannerSystem bannerSystem = new BannerSystem();
+        JSONArray alerts = new JSONArray();
+        String serverId = ServerConfigurationService.getString("serverId","localhost");
+
+        for (BannerAlert alert : bannerSystem.getActiveBannerAlertsForServer(serverId)) {
+            JSONObject alertData = new JSONObject();
+            alertData.put("id", alert.uuid);
+            alertData.put("message", alert.message);
+            alertData.put("dismissible", alert.isDismissible());
+            alerts.add(alertData);
+        }
+
+        return alerts.toJSONString();
     }
 }
