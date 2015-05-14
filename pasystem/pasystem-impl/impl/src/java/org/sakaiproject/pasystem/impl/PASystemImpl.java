@@ -1,5 +1,6 @@
 package org.sakaiproject.pasystem.impl;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 
 import org.sakaiproject.pasystem.api.PASystem;
@@ -12,17 +13,17 @@ import java.sql.Connection;
 import java.sql.SQLFeatureNotSupportedException;
 
 import java.util.logging.Logger;
+import java.util.Date;
 import java.util.Map;
 import java.util.HashMap;
 
 import org.flywaydb.core.Flyway;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
 import org.sakaiproject.pasystem.impl.banners.BannerAlert;
 import org.sakaiproject.pasystem.impl.banners.BannerSystem;
 import org.sakaiproject.portal.util.PortalUtils;
+
+import org.sakaiproject.pasystem.impl.popups.PopupSystem;
 
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Template;
@@ -33,26 +34,48 @@ class PASystemImpl implements PASystem {
         if (ServerConfigurationService.getBoolean("auto.ddl", false) || ServerConfigurationService.getBoolean("pasystem.auto.ddl", false)) {
             runDBMigration(ServerConfigurationService.getString("vendor@org.sakaiproject.db.api.SqlService"));
         }
+
+        PopupSystem popupSystem = new PopupSystem();
+        if (!popupSystem.hasCampaign("goat-warning")) {
+            try {
+                String id = popupSystem.createPopup("goat-warning", new Date(0), new Date(System.currentTimeMillis() + Integer.MAX_VALUE),
+                        new FileInputStream("/var/tmp/custom-templates/goatwarning.vm"));
+
+                popupSystem.openCampaign(id);
+
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     public void destroy() {}
 
     public String getFooter() {
+        StringBuilder result = new StringBuilder();
+
         Handlebars handlebars = new Handlebars();
 
         try {
-            Template template = handlebars.compile("templates/footer");
+            Template template = handlebars.compile("templates/shared_footer");
 
             Map<String, String> context = new HashMap<String, String>();
 
-            context.put("bannerJSON", getActiveBannersJSON());
             context.put("portalCDNQuery", PortalUtils.getCDNQuery());
 
-            return template.apply(context);
+            result.append(template.apply(context));
         } catch (IOException e) {
             // Log.warn("something clever")
             return "";
         }
+
+        BannerSystem bannerSystem = new BannerSystem();
+        result.append(bannerSystem.getFooter());
+
+        PopupSystem popupSystem = new PopupSystem();
+        result.append(popupSystem.getFooter());
+
+        return result.toString();
     }
 
     private void runDBMigration(final String vendor) {
@@ -83,21 +106,5 @@ class PASystemImpl implements PASystem {
         try {
             migrationRunner.join();
         } catch (InterruptedException e) {}
-    }
-
-    private String getActiveBannersJSON() {
-        BannerSystem bannerSystem = new BannerSystem();
-        JSONArray alerts = new JSONArray();
-        String serverId = ServerConfigurationService.getString("serverId","localhost");
-
-        for (BannerAlert alert : bannerSystem.getActiveBannerAlertsForServer(serverId)) {
-            JSONObject alertData = new JSONObject();
-            alertData.put("id", alert.uuid);
-            alertData.put("message", alert.message);
-            alertData.put("dismissible", alert.isDismissible());
-            alerts.add(alertData);
-        }
-
-        return alerts.toJSONString();
     }
 }
