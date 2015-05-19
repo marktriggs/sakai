@@ -33,6 +33,10 @@ public class PopupsHandler extends BaseHandler implements Handler {
             if (isGet(request)) {
                 handleEdit(extractId(request), context);
             }
+        } else if (request.getPathInfo().contains("/new")) {
+            if (isGet(request)) {
+                handleNew(context);
+            }
         }
     }
 
@@ -55,4 +59,7 @@ public class PopupsHandler extends BaseHandler implements Handler {
         }
     }
 
+    private void handleNew(Map<String, Object> context) {
+        context.put("subpage", "popup_form");
+    }
 }
