@@ -25,8 +25,8 @@ public class PopupManager {
                 ("Popup creation",
                         new DBAction<String>() {
                             public String call(DBConnection db) throws SQLException {
-                                String id = insertSplashScreen(db, descriptor, startDate, endDate);
-                                insertSplashContent(db, id, templateContent);
+                                String id = insertPopupScreen(db, descriptor, startDate, endDate);
+                                insertPopupContent(db, id, templateContent);
                                 db.commit();
 
                                 return id;
@@ -39,7 +39,7 @@ public class PopupManager {
                 ("Mark popup " + id + " as open campaign",
                         new DBAction<Void>() {
                             public Void call(DBConnection db) throws SQLException {
-                                db.run("INSERT INTO PASYSTEM_SPLASH_ASSIGN (uuid, open_campaign) VALUES (?, 1)")
+                                db.run("INSERT INTO PASYSTEM_POPUP_ASSIGN (uuid, open_campaign) VALUES (?, 1)")
                                         .param(id)
                                         .executeUpdate();
 
@@ -54,7 +54,7 @@ public class PopupManager {
                 ("Check whether campaign exists for descriptor: " + descriptor,
                         new DBAction<Boolean>() {
                             public Boolean call(DBConnection db) throws SQLException {
-                                try (DBResults results = db.run("SELECT uuid from PASYSTEM_SPLASH_SCREENS WHERE descriptor = ?")
+                                try (DBResults results = db.run("SELECT uuid from PASYSTEM_POPUP_SCREENS WHERE descriptor = ?")
                                         .param(descriptor)
                                         .executeQuery()) {
                                     for (ResultSet result : results) {
@@ -67,10 +67,10 @@ public class PopupManager {
                         });
     }
 
-    private String insertSplashScreen(DBConnection db, String descriptor, Date startDate, Date endDate) throws SQLException {
+    private String insertPopupScreen(DBConnection db, String descriptor, Date startDate, Date endDate) throws SQLException {
         String id = UUID.randomUUID().toString();
 
-        db.run("INSERT INTO PASYSTEM_SPLASH_SCREENS (uuid, descriptor, start_time, end_time) VALUES (?, ?, ?, ?)")
+        db.run("INSERT INTO PASYSTEM_POPUP_SCREENS (uuid, descriptor, start_time, end_time) VALUES (?, ?, ?, ?)")
                 .param(id)
                 .param(descriptor)
                 .param(startDate.getTime())
@@ -80,8 +80,8 @@ public class PopupManager {
         return id;
     }
 
-    private void insertSplashContent(DBConnection db, String id, InputStream templateContent) throws SQLException {
-        db.run("INSERT INTO PASYSTEM_SPLASH_CONTENT (uuid, template_content) VALUES (?, ?)")
+    private void insertPopupContent(DBConnection db, String id, InputStream templateContent) throws SQLException {
+        db.run("INSERT INTO PASYSTEM_POPUP_CONTENT (uuid, template_content) VALUES (?, ?)")
                 .param(id)
                 .param(new InputStreamReader(templateContent))
                 .executeUpdate();
