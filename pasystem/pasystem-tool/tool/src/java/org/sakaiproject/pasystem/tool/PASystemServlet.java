@@ -43,7 +43,6 @@ public class PASystemServlet extends HttpServlet {
     private static final Logger LOG = LoggerFactory.getLogger(PASystemServlet.class);
 
     private PASystem paSystem;
-    private URL toolBaseURL;
 
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
