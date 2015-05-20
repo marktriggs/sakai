@@ -11,9 +11,9 @@ public class BannerImpl implements Banner {
     @Getter private String message;
     @Getter private long startTime;
     @Getter private long endTime;
+    @Getter private String hosts;
 
     private boolean isActive;
-    private String hosts;
     private boolean isDismissible;
 
     public BannerImpl(String uuid, String message, String hosts, int dismissible, int active, long startTime, long endTime) {
@@ -26,9 +26,13 @@ public class BannerImpl implements Banner {
         this.endTime = endTime;
     }
 
-    public boolean isActive() {
+    public boolean isActiveNow() {
+        if (!isActive()) {
+            return false;
+        }
+
         if (startTime == 0 && endTime == 0) {
-            return isActive;
+            return isActive();
         }
 
         Date now = new Date();
@@ -41,9 +45,13 @@ public class BannerImpl implements Banner {
         return this.isDismissible;
     }
 
+    public boolean isActive() {
+        return this.isActive;
+    }
+
     public boolean isActiveForHost(String hostname) {
         // are we active?
-        if (!isActive()) {
+        if (!isActiveNow()) {
             return false;
         }
 
