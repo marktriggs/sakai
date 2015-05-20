@@ -57,9 +57,6 @@ public class PopupsHandler extends BaseHandler implements Handler {
         String uuid = extractId(request);
         PopupForm popupForm = PopupForm.fromRequest(uuid, request);
 
-        long startTime = popupForm.getStartTime();
-        long endTime = popupForm.getEndTime();
-
         if (!popupForm.hasValidStartTime()) {
             add_error("start_time", "invalid_time");
         }
@@ -85,14 +82,14 @@ public class PopupsHandler extends BaseHandler implements Handler {
         }
 
         if (CrudMode.CREATE.equals(mode)) {
-            paSystem.getPopups().createCampaign(popupForm.getDescriptor(), startTime, endTime,
+            paSystem.getPopups().createCampaign(popupForm.toPopup(),
                     templateInputStream.get(),
                     popupForm.isOpenCampaign(),
                     Optional.of(popupForm.getAssignToUsers()));
             flash("info", "popup_created");
         } else {
             paSystem.getPopups().updateCampaign(popupForm.getUuid(),
-                    popupForm.getDescriptor(), startTime, endTime,
+                    popupForm.toPopup(),
                     templateInputStream,
                     popupForm.isOpenCampaign(),
                     popupForm.isOpenCampaign() ? Optional.empty() : Optional.of(popupForm.getAssignToUsers()));

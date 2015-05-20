@@ -85,7 +85,7 @@ public class PopupForUser {
                                             String templateContent = contentClob.getSubString(1, (int)contentClob.length());
 
                                             // Got one!
-                                            return Popup.createPopup(result.getString(1),
+                                            return Popup.create(result.getString(1),
                                                     result.getString(2),
                                                     result.getLong(3),
                                                     result.getLong(4),
