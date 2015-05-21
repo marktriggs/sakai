@@ -134,6 +134,8 @@ public class BannerStorage implements Banners {
                                 .param(uuid)
                                 .executeUpdate();
 
+                        db.commit();
+
                         return null;
                     }
                 }
@@ -148,6 +150,8 @@ public class BannerStorage implements Banners {
                                 .param(uuid)
                                 .executeUpdate();
 
+                        db.commit();
+
                         return null;
                     }
                 });
@@ -161,6 +165,8 @@ public class BannerStorage implements Banners {
                                 .param(new Integer(isActive ? 1 : 0))
                                 .param(uuid)
                                 .executeUpdate();
+
+                        db.commit();
 
                         return null;
                     }
