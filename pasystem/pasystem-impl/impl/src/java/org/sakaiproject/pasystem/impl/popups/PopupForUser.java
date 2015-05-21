@@ -44,9 +44,9 @@ public class PopupForUser {
                 // And its content
                 " INNER JOIN PASYSTEM_POPUP_CONTENT content on content.uuid = popup.uuid" +
 
-                // That is either assigned to the current user, or open to all
+                // That is either assigned to the current user
                 " LEFT OUTER JOIN PASYSTEM_POPUP_ASSIGN assign " +
-                " on assign.uuid = popup.uuid AND (lower(assign.user_eid) = ? OR assign.open_campaign = 1)" +
+                " on assign.uuid = popup.uuid AND lower(assign.user_eid) = ?" +
 
                 // Which the current user hasn't yet dismissed
                 " LEFT OUTER JOIN PASYSTEM_POPUP_DISMISSED dismissed " +
@@ -54,8 +54,8 @@ public class PopupForUser {
 
                 " WHERE " +
 
-                // It's assigned to us
-                " assign.uuid IS NOT NULL AND " +
+                // It's assigned to us or open to call
+                " ((assign.uuid IS NOT NULL) OR (popup.open_campaign = 1)) AND " +
 
                 // And currently active
                 " popup.start_time <= ? AND " +
@@ -89,6 +89,7 @@ public class PopupForUser {
                                                     result.getString(2),
                                                     result.getLong(3),
                                                     result.getLong(4),
+                                                    result.getInt(5) == 1,
                                                     templateContent);
                                         }
 
