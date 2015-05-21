@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.Writer;
 import java.net.URL;
 import java.net.MalformedURLException;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -31,6 +30,7 @@ import org.sakaiproject.time.api.Time;
 import org.sakaiproject.tool.cover.ToolManager;
 
 import org.sakaiproject.pasystem.api.PASystem;
+import org.sakaiproject.pasystem.api.I18n;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,15 +45,12 @@ public class PASystemServlet extends HttpServlet {
 
     private static final Logger LOG = LoggerFactory.getLogger(PASystemServlet.class);
 
-    private ConcurrentHashMap<String, I18n> i18nStore;
-
     private PASystem paSystem;
 
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
 
         paSystem = (PASystem) ComponentManager.get(PASystem.class);
-        i18nStore = new ConcurrentHashMap<String, I18n>(1);
     }
 
     private Handler handlerForRequest(HttpServletRequest request) {
@@ -80,7 +77,7 @@ public class PASystemServlet extends HttpServlet {
         checkAccessControl();
 
         Locale userLocale = PreferencesService.getLocale(SessionManager.getCurrentSessionUserId());
-        I18n i18n = getI18nForLocale(userLocale);
+        I18n i18n = paSystem.getI18n(this.getClass().getClassLoader(), "org/sakaiproject/pasystem/tool/i18n", userLocale);
 
         response.setHeader("Content-Type", "text/html");
 
@@ -116,20 +113,6 @@ public class PASystemServlet extends HttpServlet {
         } catch (IOException e) {
             LOG.warn("Write failed", e);
         }
-    }
-
-    private I18n getI18nForLocale(Locale userLocale) {
-        String language = "en";
-
-        if (userLocale != null) {
-            language = userLocale.getLanguage();
-        }
-
-        if (!i18nStore.containsKey(language)) {
-            i18nStore.put(language, new I18n(userLocale));
-        }
-
-        return i18nStore.get(language);
     }
 
     private void checkAccessControl() {
