@@ -60,7 +60,7 @@ public class BannersHandler extends BaseHandler implements Handler {
         Optional<Banner> banner = paSystem.getBanners().getForId(uuid);
 
         if (banner.isPresent()) {
-            showEditForm(BannerForm.fromBanner(banner.get(), paSystem), context);
+            showEditForm(BannerForm.fromBanner(banner.get(), paSystem), context, CrudMode.UPDATE);
         } else {
             LOG.warn("No banner found for UUID: " + uuid);
             sendRedirect("");
@@ -93,7 +93,7 @@ public class BannersHandler extends BaseHandler implements Handler {
         }
 
         if (hasErrors()) {
-            showEditForm(bannerForm, context);
+            showEditForm(bannerForm, context, mode);
             return;
         }
 
@@ -119,9 +119,15 @@ public class BannersHandler extends BaseHandler implements Handler {
         sendRedirect("");
     }
 
-    private void showEditForm(BannerForm bannerForm, Map<String, Object> context) {
+    private void showEditForm(BannerForm bannerForm, Map<String, Object> context, CrudMode mode) {
         context.put("subpage", "banner_form");
-        context.put("mode", "edit");
+
+        if (CrudMode.UPDATE.equals(mode)) {
+            context.put("mode", "edit");
+        } else {
+            context.put("mode", "new");
+        }
+
         context.put("banner", bannerForm);
     }
 }
