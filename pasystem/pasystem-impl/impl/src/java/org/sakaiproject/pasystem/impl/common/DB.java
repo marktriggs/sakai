@@ -1,14 +1,19 @@
 package org.sakaiproject.pasystem.impl.common;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import org.sakaiproject.db.cover.SqlService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+
 public class DB {
 
     private static final Logger LOG = LoggerFactory.getLogger(DB.class);
+
+    private DB() {
+        // No public constructor for this utility class
+    }
 
     public static <E> E transaction(DBAction<E> action) throws DBException {
         return transaction(action.toString(), action);
@@ -22,7 +27,7 @@ public class DB {
 
             try {
                 db.setAutoCommit(false);
-                
+
                 return action.call(dbc);
             } finally {
 

@@ -1,12 +1,5 @@
 package org.sakaiproject.pasystem.impl.banners;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 import org.sakaiproject.pasystem.api.Banner;
 import org.sakaiproject.pasystem.api.Banners;
 import org.sakaiproject.pasystem.impl.common.DB;
@@ -15,6 +8,13 @@ import org.sakaiproject.pasystem.impl.common.DBConnection;
 import org.sakaiproject.pasystem.impl.common.DBResults;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 public class BannerStorage implements Banners {
 
@@ -41,8 +41,9 @@ public class BannerStorage implements Banners {
                                     return banners;
                                 }
                             }
-                        });
-    };
+                        }
+                );
+    }
 
     public Optional<Banner> getForId(final String uuid) {
         return DB.transaction
@@ -65,7 +66,8 @@ public class BannerStorage implements Banners {
                                     return Optional.empty();
                                 }
                             }
-                        });
+                        }
+                );
     }
 
     public List<Banner> getActiveAlertsForServer(String serverId) {
@@ -84,16 +86,17 @@ public class BannerStorage implements Banners {
                                                 result.getInt("active"),
                                                 result.getLong("start_time"),
                                                 result.getLong("end_time"));
-  
+
                                         if (alert.isActiveForHost(serverId)) {
                                             alerts.add(alert);
                                         }
                                     }
-  
+
                                     return alerts;
                                 }
                             }
-                        });
+                        }
+                );
     }
 
     public String createBanner(String message, String hosts, boolean isDismissible, boolean isActive, long startTime, long endTime) {
@@ -154,7 +157,8 @@ public class BannerStorage implements Banners {
 
                         return null;
                     }
-                });
+                }
+        );
     }
 
     public void setBannerActiveState(String uuid, boolean isActive) {

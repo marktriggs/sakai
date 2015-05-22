@@ -1,8 +1,5 @@
 package org.sakaiproject.pasystem.impl.popups;
 
-import java.sql.Clob;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import org.sakaiproject.component.cover.ServerConfigurationService;
 import org.sakaiproject.pasystem.api.Popup;
 import org.sakaiproject.pasystem.impl.common.DB;
@@ -12,6 +9,10 @@ import org.sakaiproject.pasystem.impl.common.DBResults;
 import org.sakaiproject.user.api.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.sql.Clob;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class PopupForUser {
 
@@ -82,7 +83,7 @@ public class PopupForUser {
                                             .executeQuery()) {
                                         for (ResultSet result : results) {
                                             Clob contentClob = result.getClob(6);
-                                            String templateContent = contentClob.getSubString(1, (int)contentClob.length());
+                                            String templateContent = contentClob.getSubString(1, (int) contentClob.length());
 
                                             // Got one!
                                             return Popup.create(result.getString(1),
@@ -97,7 +98,8 @@ public class PopupForUser {
                                         return Popup.createNullPopup();
                                     }
                                 }
-                            });
+                            }
+                    );
         } catch (Exception e) {
             LOG.error("Error determining active popup", e);
             return Popup.createNullPopup();
@@ -109,7 +111,7 @@ public class PopupForUser {
             return;
         }
 
-        final String mappedAcknowledgement = ("permanent".equals(acknowledgement) ? "permanent" : "temporary");
+        final String mappedAcknowledgement = "permanent".equals(acknowledgement) ? "permanent" : "temporary";
 
         try {
             DB.transaction
@@ -139,7 +141,7 @@ public class PopupForUser {
                 .param(campaign)
                 .executeUpdate();
 
-        return (updatedRows > 0);
+        return updatedRows > 0;
     }
 
     private boolean insertNewEntry(DBConnection db, String campaign, String acknowledgement) throws SQLException {
@@ -151,6 +153,6 @@ public class PopupForUser {
                 .param(now)
                 .executeUpdate();
 
-        return (updatedRows > 0);
+        return updatedRows > 0;
     }
 }

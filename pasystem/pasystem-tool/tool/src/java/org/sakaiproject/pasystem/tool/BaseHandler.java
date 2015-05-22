@@ -1,24 +1,16 @@
 package org.sakaiproject.pasystem.tool;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import java.text.SimpleDateFormat;
-import java.text.ParseException;
 
 abstract class BaseHandler implements Handler {
 
     private List<Error> errors;
     private Map<String, List<String>> flashMessages;
     private String redirectURI;
-
-    enum CrudMode {
-        CREATE,
-        UPDATE
-    };
 
     protected boolean isGet(HttpServletRequest request) {
         return "GET".equals(request.getMethod());
@@ -44,14 +36,14 @@ abstract class BaseHandler implements Handler {
         String[] bits = request.getPathInfo().split("/");
 
         if (bits.length < 2) {
-            add_error("uuid", "uuid_missing", request.getPathInfo());
+            addError("uuid", "uuid_missing", request.getPathInfo());
             return "";
         } else {
             return bits[bits.length - 2];
         }
     }
 
-    protected void add_error(String field, String errorCode, String ... values) {
+    protected void addError(String field, String errorCode, String... values) {
         if (errors == null) {
             errors = new ArrayList<Error>();
         }
@@ -93,6 +85,11 @@ abstract class BaseHandler implements Handler {
 
     public String toString() {
         return this.getClass().toString();
+    }
+
+    enum CrudMode {
+        CREATE,
+        UPDATE
     }
 }
 

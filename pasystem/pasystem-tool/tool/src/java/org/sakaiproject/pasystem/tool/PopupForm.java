@@ -1,15 +1,16 @@
 package org.sakaiproject.pasystem.tool;
 
-import javax.servlet.http.HttpServletRequest;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.sakaiproject.pasystem.api.PASystem;
 import org.sakaiproject.pasystem.api.Popup;
+
+import javax.servlet.http.HttpServletRequest;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
@@ -33,10 +34,6 @@ class PopupForm {
                 existingPopup.isOpenCampaign(),
                 assignees,
                 null);
-    }
-
-    public Popup toPopup() {
-        return Popup.create(descriptor, startTime, endTime, isOpenCampaign);
     }
 
     private static long parseTime(String timeString) {
@@ -70,15 +67,23 @@ class PopupForm {
         return new PopupForm(uuid, descriptor, startTime, endTime, isOpenCampaign, assignToUsers, null);
     }
 
-    public boolean hasValidStartTime() { return startTime >= 0; }
+    public Popup toPopup() {
+        return Popup.create(descriptor, startTime, endTime, isOpenCampaign);
+    }
 
-    public boolean hasValidEndTime() { return endTime >= 0; }
+    public boolean hasValidStartTime() {
+        return startTime >= 0;
+    }
+
+    public boolean hasValidEndTime() {
+        return endTime >= 0;
+    }
 
     public boolean startTimeBeforeEndTime() {
         if (startTime <= 0 || endTime <= 0) {
             return true;
         } else {
-            return (startTime <= endTime);
+            return startTime <= endTime;
         }
     }
 }

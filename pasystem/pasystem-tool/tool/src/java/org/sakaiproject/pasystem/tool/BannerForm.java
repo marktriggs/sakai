@@ -1,15 +1,13 @@
 package org.sakaiproject.pasystem.tool;
 
-import javax.servlet.http.HttpServletRequest;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.sakaiproject.pasystem.api.PASystem;
 import org.sakaiproject.pasystem.api.Banner;
+
+import javax.servlet.http.HttpServletRequest;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 @Data
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
@@ -23,8 +21,7 @@ class BannerForm {
     private boolean isActive;
     private boolean isDismissible;
 
-    
-    public static BannerForm fromBanner(Banner existingBanner, PASystem paSystem) {
+    public static BannerForm fromBanner(Banner existingBanner) {
         String uuid = existingBanner.getUuid();
 
         return new BannerForm(uuid,
@@ -61,15 +58,19 @@ class BannerForm {
         return new BannerForm(uuid, message, hosts, startTime, endTime, isActive, isDismissible);
     }
 
-    public boolean hasValidStartTime() { return startTime >= 0; }
+    public boolean hasValidStartTime() {
+        return startTime >= 0;
+    }
 
-    public boolean hasValidEndTime() { return endTime >= 0; }
+    public boolean hasValidEndTime() {
+        return endTime >= 0;
+    }
 
     public boolean startTimeBeforeEndTime() {
         if (startTime <= 0 || endTime <= 0) {
             return true;
         } else {
-            return (startTime <= endTime);
+            return startTime <= endTime;
         }
     }
 }

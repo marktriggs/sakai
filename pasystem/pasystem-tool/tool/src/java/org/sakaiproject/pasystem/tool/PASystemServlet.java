@@ -4,39 +4,33 @@ import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Helper;
 import com.github.jknack.handlebars.Options;
 import com.github.jknack.handlebars.Template;
+import org.sakaiproject.authz.cover.SecurityService;
 import org.sakaiproject.component.cover.ComponentManager;
 import org.sakaiproject.component.cover.ServerConfigurationService;
+import org.sakaiproject.pasystem.api.I18n;
+import org.sakaiproject.pasystem.api.PASystem;
+import org.sakaiproject.pasystem.api.PASystemException;
+import org.sakaiproject.time.api.Time;
+import org.sakaiproject.time.cover.TimeService;
+import org.sakaiproject.tool.api.Session;
+import org.sakaiproject.tool.cover.SessionManager;
+import org.sakaiproject.tool.cover.ToolManager;
+import org.sakaiproject.user.cover.PreferencesService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.Writer;
-import java.net.URL;
 import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.Enumeration;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import org.sakaiproject.user.cover.PreferencesService;
-import org.sakaiproject.tool.api.Session;
-import org.sakaiproject.tool.cover.SessionManager;
-import org.sakaiproject.authz.cover.SecurityService;
-import org.sakaiproject.time.cover.TimeService;
-import org.sakaiproject.time.api.Time;
-import org.sakaiproject.tool.cover.ToolManager;
-
-import org.sakaiproject.pasystem.api.PASystem;
-import org.sakaiproject.pasystem.api.I18n;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import org.sakaiproject.tool.api.ToolURL;
-import org.sakaiproject.tool.api.ToolURLManager;
 
 public class PASystemServlet extends HttpServlet {
 
@@ -119,7 +113,7 @@ public class PASystemServlet extends HttpServlet {
     private void checkAccessControl() {
         if (!SecurityService.unlock("pasystem.manage", ADMIN_SITE_REALM)) {
             LOG.error("Access denied to PA System management tool for user " + SessionManager.getCurrentSessionUserId());
-            throw new RuntimeException("Access denied");
+            throw new PASystemException("Access denied");
         }
     }
 
@@ -130,7 +124,6 @@ public class PASystemServlet extends HttpServlet {
 
     private Map<String, List<String>> loadFlashMessages() {
         Session session = SessionManager.getCurrentSession();
-        
 
         if (session.getAttribute(FLASH_MESSAGE_KEY) != null) {
             Map<String, List<String>> flashErrors = (Map<String, List<String>>) session.getAttribute(FLASH_MESSAGE_KEY);
@@ -149,7 +142,7 @@ public class PASystemServlet extends HttpServlet {
         try {
             return new URL(ServerConfigurationService.getPortalUrl() + "/site/" + siteId + "/tool/" + toolId + "/");
         } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
+            throw new PASystemException("Couldn't determine tool URL", e);
         }
     }
 
@@ -157,18 +150,21 @@ public class PASystemServlet extends HttpServlet {
         Handlebars handlebars = new Handlebars();
 
         handlebars.registerHelper("subpage", new Helper<Object>() {
+            @Override
             public CharSequence apply(final Object context, final Options options) {
                 String subpage = options.param(0);
                 try {
                     Template template = handlebars.compile("org/sakaiproject/pasystem/tool/views/" + subpage);
                     return template.apply(context);
                 } catch (IOException e) {
+                    LOG.warn("IOException while loading subpage", e);
                     return "";
                 }
             }
         });
 
         handlebars.registerHelper("show-time", new Helper<Object>() {
+            @Override
             public CharSequence apply(final Object context, final Options options) {
                 long utcTime = options.param(0) == null ? 0 : options.param(0);
 
@@ -183,6 +179,7 @@ public class PASystemServlet extends HttpServlet {
         });
 
         handlebars.registerHelper("actionURL", new Helper<Object>() {
+            @Override
             public CharSequence apply(final Object context, final Options options) {
                 String type = options.param(0);
                 String uuid = options.param(1);
@@ -191,12 +188,13 @@ public class PASystemServlet extends HttpServlet {
                 try {
                     return new URL(baseURL, type + "/" + uuid + "/" + action).toString();
                 } catch (MalformedURLException e) {
-                    throw new RuntimeException(e);
+                    throw new PASystemException("Failed while building action URL", e);
                 }
             }
         });
 
         handlebars.registerHelper("newURL", new Helper<Object>() {
+            @Override
             public CharSequence apply(final Object context, final Options options) {
                 String type = options.param(0);
                 String action = options.param(1);
@@ -204,12 +202,13 @@ public class PASystemServlet extends HttpServlet {
                 try {
                     return new URL(baseURL, type + "/" + action).toString();
                 } catch (MalformedURLException e) {
-                    throw new RuntimeException(e);
+                    throw new PASystemException("Failed while building newURL", e);
                 }
             }
         });
 
         handlebars.registerHelper("t", new Helper<Object>() {
+            @Override
             public CharSequence apply(final Object context, final Options options) {
                 String key = options.param(0);
                 return i18n.t(key);

@@ -1,17 +1,22 @@
 package org.sakaiproject.pasystem.impl.banners;
 
-import java.util.Arrays;
-import java.util.Date;
+import lombok.Getter;
 import org.sakaiproject.pasystem.api.Banner;
 
-import lombok.Getter;
+import java.util.Arrays;
+import java.util.Date;
 
 public class BannerImpl implements Banner {
-    @Getter private String uuid;
-    @Getter private String message;
-    @Getter private long startTime;
-    @Getter private long endTime;
-    @Getter private String hosts;
+    @Getter
+    private String uuid;
+    @Getter
+    private String message;
+    @Getter
+    private long startTime;
+    @Getter
+    private long endTime;
+    @Getter
+    private String hosts;
 
     private boolean isActive;
     private boolean isDismissible;

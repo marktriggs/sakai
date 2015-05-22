@@ -1,15 +1,5 @@
 package org.sakaiproject.pasystem.impl.popups;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.sql.Clob;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 import org.sakaiproject.pasystem.api.Popup;
 import org.sakaiproject.pasystem.api.Popups;
 import org.sakaiproject.pasystem.impl.common.DB;
@@ -18,6 +8,16 @@ import org.sakaiproject.pasystem.impl.common.DBConnection;
 import org.sakaiproject.pasystem.impl.common.DBResults;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.sql.Clob;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 public class PopupStorage implements Popups {
 
@@ -31,7 +31,7 @@ public class PopupStorage implements Popups {
                         new DBAction<String>() {
                             public String call(DBConnection db) throws SQLException {
                                 String uuid = UUID.randomUUID().toString();
-                     
+
                                 db.run("INSERT INTO PASYSTEM_POPUP_SCREENS (uuid, descriptor, start_time, end_time, open_campaign) VALUES (?, ?, ?, ?, ?)")
                                         .param(uuid)
                                         .param(popup.getDescriptor())
@@ -47,7 +47,8 @@ public class PopupStorage implements Popups {
 
                                 return uuid;
                             }
-                        });
+                        }
+                );
     }
 
     public boolean updateCampaign(String uuid, Popup popup,
@@ -78,10 +79,11 @@ public class PopupStorage implements Popups {
                                 db.commit();
 
                                 LOG.info("Update of popup {} completed", uuid);
-                     
+
                                 return true;
                             }
-                        });
+                        }
+                );
     }
 
     public List<Popup> getAll() {
@@ -103,7 +105,8 @@ public class PopupStorage implements Popups {
                                     return popups;
                                 }
                             }
-                        });
+                        }
+                );
     }
 
     public String getPopupContent(final String uuid) {
@@ -116,13 +119,14 @@ public class PopupStorage implements Popups {
                                         .executeQuery()) {
                                     for (ResultSet result : results) {
                                         Clob contentClob = result.getClob(1);
-                                        return contentClob.getSubString(1, (int)contentClob.length());
+                                        return contentClob.getSubString(1, (int) contentClob.length());
                                     }
 
                                     return "";
                                 }
                             }
-                        });
+                        }
+                );
     }
 
     public Optional<Popup> getForId(final String uuid) {
@@ -144,7 +148,8 @@ public class PopupStorage implements Popups {
                                     return Optional.empty();
                                 }
                             }
-                        });
+                        }
+                );
     }
 
     public List<String> getAssignees(final String uuid) {
@@ -164,7 +169,8 @@ public class PopupStorage implements Popups {
                                     return users;
                                 }
                             }
-                        });
+                        }
+                );
     }
 
     private void setPopupContent(DBConnection db, String uuid, InputStream templateContent) throws SQLException {
@@ -226,7 +232,8 @@ public class PopupStorage implements Popups {
 
                                 return true;
                             }
-                        });
+                        }
+                );
     }
 
     public void acknowledge(final String uuid, final String userEid, final String acknowledgementType) {
@@ -246,6 +253,7 @@ public class PopupStorage implements Popups {
                                 db.commit();
                                 return null;
                             }
-                        });
+                        }
+                );
     }
 }
