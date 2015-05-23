@@ -13,7 +13,7 @@ import java.io.InputStream;
 import java.util.Map;
 import java.util.Optional;
 
-public class PopupsHandler extends BaseHandler implements Handler {
+public class PopupsHandler extends CrudHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(PopupsHandler.class);
 
@@ -24,50 +24,43 @@ public class PopupsHandler extends BaseHandler implements Handler {
     }
 
     public void handle(HttpServletRequest request, HttpServletResponse response, Map<String, Object> context) {
-        if (request.getPathInfo().contains("/edit")) {
-            if (isGet(request)) {
-                String uuid = extractId(request);
-                Optional<Popup> popup = paSystem.getPopups().getForId(uuid);
+        if (request.getPathInfo().contains("/preview") && isGet(request)) {
+            handlePreview(request, response, context);
+        } else {
+            super.handle(request, response, context);
+        }
+    }
 
-                if (popup.isPresent()) {
-                    showEditForm(PopupForm.fromPopup(popup.get(), paSystem), context, CrudMode.UPDATE);
-                } else {
-                    flash("danger", "No popup found for UUID: " + uuid);
-                    sendRedirect("");
-                }
-            } else if (isPost(request)) {
-                handleCreateOrUpdate(request, context, CrudMode.UPDATE);
-            }
-        } else if (request.getPathInfo().contains("/new")) {
-            if (isGet(request)) {
-                showNewForm(context);
-            } else if (isPost(request)) {
-                handleCreateOrUpdate(request, context, CrudMode.CREATE);
-            }
-        } else if (request.getPathInfo().contains("/delete")) {
-            if (isGet(request)) {
-                sendRedirect("");
-            } else if (isPost(request)) {
-                handleDelete(extractId(request));
-            }
-        } else if (request.getPathInfo().contains("/preview") && isGet(request)) {
-            String uuid = extractId(request);
+    protected void handleEdit(HttpServletRequest request, Map<String, Object> context) {
+        String uuid = extractId(request);
+        Optional<Popup> popup = paSystem.getPopups().getForId(uuid);
 
-            context.put("layout", false);
-            try {
-                String content = paSystem.getPopups().getPopupContent(uuid);
+        if (popup.isPresent()) {
+            showEditForm(PopupForm.fromPopup(popup.get(), paSystem), context, CrudMode.UPDATE);
+        } else {
+            flash("danger", "No popup found for UUID: " + uuid);
+            sendRedirect("");
+        }
 
-                if (content.isEmpty()) {
-                    // Don't let the portal buffering hijack our response.
-                    // Include enough content to count as having returned a
-                    // body.
-                    content = "     ";
-                }
+    }
 
-                response.getWriter().write(content);
-            } catch (IOException e) {
-                LOG.warn("Write failed while previewing popup", e);
+    private void handlePreview(HttpServletRequest request, HttpServletResponse response, Map<String, Object> context) {
+        String uuid = extractId(request);
+
+        context.put("layout", false);
+        try {
+            String content = paSystem.getPopups().getPopupContent(uuid);
+
+            if (content.isEmpty()) {
+                // Don't let the portal buffering hijack our response.
+                // Include enough content to count as having returned a
+                // body.
+                content = "     ";
             }
+
+            response.getWriter().write(content);
+        } catch (IOException e) {
+            LOG.warn("Write failed while previewing popup", e);
         }
     }
 
@@ -83,7 +76,7 @@ public class PopupsHandler extends BaseHandler implements Handler {
         context.put("popup", popupForm);
     }
 
-    private void handleCreateOrUpdate(HttpServletRequest request, Map<String, Object> context, CrudMode mode) {
+    protected void handleCreateOrUpdate(HttpServletRequest request, Map<String, Object> context, CrudMode mode) {
         String uuid = extractId(request);
         PopupForm popupForm = PopupForm.fromRequest(uuid, request);
 
@@ -144,13 +137,14 @@ public class PopupsHandler extends BaseHandler implements Handler {
         return Optional.empty();
     }
 
-    private void showNewForm(Map<String, Object> context) {
+    protected void showNewForm(Map<String, Object> context) {
         context.put("subpage", "popup_form");
         context.put("mode", "new");
         context.put("templateRequired", true);
     }
 
-    private void handleDelete(String uuid) {
+    protected void handleDelete(HttpServletRequest request) {
+        String uuid = extractId(request);
         paSystem.getPopups().deleteCampaign(uuid);
 
         flash("info", "popup_deleted");
