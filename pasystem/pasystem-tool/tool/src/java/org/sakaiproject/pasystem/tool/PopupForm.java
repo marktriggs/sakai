@@ -1,4 +1,3 @@
-
 package org.sakaiproject.pasystem.tool;
 
 import lombok.Data;
@@ -15,6 +14,15 @@ class PopupForm extends BaseForm {
     private String descriptor;
     private boolean isOpenCampaign;
     private List<String> assignToUsers;
+
+    private PopupForm(String uuid, String descriptor, long startTime, long endTime, boolean isOpenCampaign, List<String> assignees) {
+        this.uuid = uuid;
+        this.descriptor = descriptor;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.isOpenCampaign = isOpenCampaign;
+        this.assignToUsers = assignees;
+    }
 
     public static PopupForm fromPopup(Popup existingPopup, PASystem paSystem) {
         String uuid = existingPopup.getUuid();
@@ -48,15 +56,6 @@ class PopupForm extends BaseForm {
 
     public Popup toPopup() {
         return Popup.create(descriptor, startTime, endTime, isOpenCampaign);
-    }
-
-    private PopupForm(String uuid, String descriptor, long startTime, long endTime, boolean isOpenCampaign, List<String> assignees) {
-        this.uuid = uuid;
-        this.descriptor = descriptor;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.isOpenCampaign = isOpenCampaign;
-        this.assignToUsers = assignees;
     }
 
 }
