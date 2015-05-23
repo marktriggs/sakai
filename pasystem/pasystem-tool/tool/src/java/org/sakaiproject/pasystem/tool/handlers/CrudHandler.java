@@ -4,7 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
-abstract class CrudHandler extends BaseHandler {
+public abstract class CrudHandler extends BaseHandler {
 
     protected String extractId(HttpServletRequest request) {
         String[] bits = request.getPathInfo().split("/");
@@ -49,7 +49,7 @@ abstract class CrudHandler extends BaseHandler {
 
     abstract protected void handleEdit(HttpServletRequest request, Map<String, Object> context);
 
-    enum CrudMode {
+    public enum CrudMode {
         CREATE,
         UPDATE
     }
