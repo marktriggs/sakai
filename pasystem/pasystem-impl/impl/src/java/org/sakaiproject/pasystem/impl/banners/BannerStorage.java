@@ -29,7 +29,7 @@ public class BannerStorage implements Banners {
                                 try (DBResults results = db.run("SELECT * from PASYSTEM_BANNER_ALERT")
                                         .executeQuery()) {
                                     for (ResultSet result : results) {
-                                        banners.add(new BannerImpl(result.getString("uuid"),
+                                        banners.add(new Banner(result.getString("uuid"),
                                                 result.getString("message"),
                                                 result.getString("hosts"),
                                                 result.getInt("dismissible"),
@@ -54,7 +54,7 @@ public class BannerStorage implements Banners {
                                         .param(uuid)
                                         .executeQuery()) {
                                     for (ResultSet result : results) {
-                                        return Optional.of(new BannerImpl(result.getString("uuid"),
+                                        return Optional.of(new Banner(result.getString("uuid"),
                                                 result.getString("message"),
                                                 result.getString("hosts"),
                                                 result.getInt("dismissible"),
@@ -79,7 +79,7 @@ public class BannerStorage implements Banners {
                                 try (DBResults results = db.run("SELECT * from PASYSTEM_BANNER_ALERT where ACTIVE = 1")
                                         .executeQuery()) {
                                     for (ResultSet result : results) {
-                                        Banner alert = new BannerImpl(result.getString("uuid"),
+                                        Banner alert = new Banner(result.getString("uuid"),
                                                 result.getString("message"),
                                                 result.getString("hosts"),
                                                 result.getInt("dismissible"),
