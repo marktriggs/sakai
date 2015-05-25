@@ -1,9 +1,10 @@
 package org.sakaiproject.pasystem.api;
 
+import org.sakaiproject.pasystem.api.Acknowledger;
 import java.util.List;
 import java.util.Optional;
 
-public interface Banners {
+public interface Banners extends Acknowledger {
 
     public List<Banner> getActiveAlertsForServer(String serverId);
 
