@@ -57,12 +57,15 @@ class PASystemImpl implements PASystem {
         I18n i18n = getI18n(this.getClass().getClassLoader(), "i18n", userLocale);
         Handlebars handlebars = loadHandleBars(i18n);
 
+        Session session = SessionManager.getCurrentSession();
+
+        Map<String, Object> context = new HashMap<String, Object>();
+
         try {
             Template template = handlebars.compile("templates/shared_footer");
 
-            Map<String, String> context = new HashMap<String, String>();
-
             context.put("portalCDNQuery", PortalUtils.getCDNQuery());
+            context.put("sakai_csrf_token", session.getAttribute("sakai.csrf.token"));
 
             result.append(template.apply(context));
         } catch (IOException e) {
@@ -70,9 +73,9 @@ class PASystemImpl implements PASystem {
             return "";
         }
 
-        result.append(getBannersFooter(handlebars));
-        result.append(getPopupsFooter(handlebars));
-        result.append(getTimezoneCheckFooter(handlebars));
+        result.append(getBannersFooter(handlebars, context));
+        result.append(getPopupsFooter(handlebars, context));
+        result.append(getTimezoneCheckFooter(handlebars, context));
 
         return result.toString();
     }
@@ -147,11 +150,9 @@ class PASystemImpl implements PASystem {
         }
     }
 
-    private String getBannersFooter(Handlebars handlebars) {
+    private String getBannersFooter(Handlebars handlebars, Map<String, Object> context) {
         try {
             Template template = handlebars.compile("templates/banner_footer");
-
-            Map<String, String> context = new HashMap<String, String>();
 
             context.put("bannerJSON", getActiveBannersJSON());
 
@@ -180,7 +181,7 @@ class PASystemImpl implements PASystem {
         return alerts.toJSONString();
     }
 
-    private String getPopupsFooter(Handlebars handlebars) {
+    private String getPopupsFooter(Handlebars handlebars, Map<String, Object> context) {
         Session session = SessionManager.getCurrentSession();
         User currentUser = UserDirectoryService.getCurrentUser();
 
@@ -188,14 +189,11 @@ class PASystemImpl implements PASystem {
             return "";
         }
 
-        Map<String, Object> context = new HashMap<String, Object>();
-
         if (session.getAttribute(POPUP_SCREEN_SHOWN) == null) {
             Popup popup = new PopupForUser(currentUser).getPopup();
             if (popup.isActive()) {
                 context.put("popupTemplate", popup.getTemplate());
                 context.put("popupUuid", popup.getUuid());
-                context.put("sakai_csrf_token", session.getAttribute("sakai.csrf.token"));
                 context.put("popup", true);
 
                 if (currentUser.getEid() != null) {
@@ -214,13 +212,13 @@ class PASystemImpl implements PASystem {
         }
     }
 
-    private String getTimezoneCheckFooter(Handlebars handlebars) {
+    private String getTimezoneCheckFooter(Handlebars handlebars, Map<String, Object> context) {
         if (ServerConfigurationService.getBoolean("pasystem.timezone-check", false)) {
 
             try {
                 Template template = handlebars.compile("templates/timezone_footer");
 
-                return template.apply(this);
+                return template.apply(context);
             } catch (IOException e) {
                 LOG.warn("Timezone footer failed", e);
                 return "";
