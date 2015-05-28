@@ -3,6 +3,7 @@ package org.sakaiproject.pasystem.impl.popups;
 import org.sakaiproject.pasystem.api.Acknowledger;
 import org.sakaiproject.pasystem.api.Popup;
 import org.sakaiproject.pasystem.api.Popups;
+import org.sakaiproject.pasystem.api.TemplateStream;
 import org.sakaiproject.pasystem.impl.acknowledgements.AcknowledgementStorage;
 import org.sakaiproject.pasystem.impl.common.DB;
 import org.sakaiproject.pasystem.impl.common.DBAction;
@@ -26,7 +27,7 @@ public class PopupStorage implements Popups, Acknowledger {
     private static final Logger LOG = LoggerFactory.getLogger(PopupStorage.class);
 
     public String createCampaign(Popup popup,
-                                 InputStream templateInput,
+                                 TemplateStream templateInput,
                                  Optional<List<String>> assignToUsers) {
         return DB.transaction
                 ("Popup creation",
@@ -55,7 +56,7 @@ public class PopupStorage implements Popups, Acknowledger {
 
     public boolean updateCampaign(String uuid,
                                   Popup popup,
-                                  Optional<InputStream> templateInput,
+                                  Optional<TemplateStream> templateInput,
                                   Optional<List<String>> assignToUsers) {
         return DB.transaction
                 ("Update an existing popup campaign",
@@ -176,7 +177,7 @@ public class PopupStorage implements Popups, Acknowledger {
                 );
     }
 
-    private void setPopupContent(DBConnection db, String uuid, InputStream templateContent) throws SQLException {
+    private void setPopupContent(DBConnection db, String uuid, TemplateStream templateContent) throws SQLException {
         // A little hoop jumping here to avoid having to rewind the InputStream
         //
         // Add an empty record if one is missing
@@ -190,7 +191,8 @@ public class PopupStorage implements Popups, Acknowledger {
 
         // Set the content CLOB
         db.run("UPDATE PASYSTEM_POPUP_CONTENT set template_content = ? WHERE uuid = ?")
-                .param(new InputStreamReader(templateContent))
+                .param(new InputStreamReader(templateContent.getInputStream()),
+                        templateContent.getLength())
                 .param(uuid)
                 .executeUpdate();
     }
