@@ -56,15 +56,23 @@ public class PASystemEntityProvider implements EntityProvider, AutoRegisterEntit
         return doAcknowledge(paSystem.getBanners(), params);
     }
 
+    private boolean checkCSRFToken(Map<String, Object> params) {
+        Object sessionToken = SessionManager.getCurrentSession().getAttribute("sakai.csrf.token");
+
+        if (sessionToken == null || !((String) sessionToken).equals(params.get("sakai_csrf_token"))) {
+            LOG.warn("CSRF token validation failed");
+            return false;
+        }
+
+        return true;
+    }
+
     private String doAcknowledge(Acknowledger acknowledger, Map<String, Object> params) {
         JSONObject result = new JSONObject();
 
         result.put("status", "ERROR");
 
-        Object sessionToken = SessionManager.getCurrentSession().getAttribute("sakai.csrf.token");
-
-        if (sessionToken == null || !((String) sessionToken).equals(params.get("sakai_csrf_token"))) {
-            LOG.warn("CSRF token validation failed");
+        if (!checkCSRFToken(params)) {
             return result.toJSONString();
         }
 
@@ -73,12 +81,43 @@ public class PASystemEntityProvider implements EntityProvider, AutoRegisterEntit
         String acknowledgement = (String) params.get("acknowledgement");
         String eid = currentUser.getEid();
 
-        if (uuid == null || acknowledgement == null || eid == null) {
+        if (uuid == null || eid == null) {
             LOG.warn("Parameter mismatch: {}", params);
             return result.toJSONString();
         }
 
-        acknowledger.acknowledge(uuid, eid, acknowledgement);
+        if (acknowledgement == null) {
+            acknowledger.acknowledge(uuid, eid);
+        } else {
+            acknowledger.acknowledge(uuid, eid, acknowledgement);
+        }
+                
+        result.put("status", "SUCCESS");
+
+        return result.toJSONString();
+    }
+
+    @EntityCustomAction(action = "clearBannerAcknowledgements", viewKey = EntityView.VIEW_NEW)
+    public String clearBannerAcknowledgements(EntityView view, Map<String, Object> params) {
+        PASystem paSystem = (PASystem) ComponentManager.get(PASystem.class);
+
+        JSONObject result = new JSONObject();
+
+        result.put("status", "ERROR");
+
+        if (!checkCSRFToken(params)) {
+            return result.toJSONString();
+        }
+
+        User currentUser = UserDirectoryService.getCurrentUser();
+        String eid = currentUser.getEid();
+
+        if (eid == null) {
+            LOG.warn("Parameter mismatch: {}", params);
+            return result.toJSONString();
+        }
+
+        paSystem.getBanners().clearTemporaryDismissedForUser(eid);
         result.put("status", "SUCCESS");
 
         return result.toJSONString();
