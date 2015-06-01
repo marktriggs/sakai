@@ -59,6 +59,18 @@ public class Banner implements Comparable<Banner> {
         return getSeverityScore() - other.getSeverityScore();
     }
 
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Banner)) {
+            return false;
+        }
+
+        return uuid.equals(((Banner)obj).getUuid());
+    }
+
+    public int hashCode() {
+        return uuid.hashCode();
+    }
+
     public int getSeverityScore() {
         return type.ordinal();
     }
