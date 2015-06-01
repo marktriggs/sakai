@@ -64,7 +64,6 @@ public class BannersHandler extends CrudHandler {
         if (CrudMode.CREATE.equals(mode)) {
             paSystem.getBanners().createBanner(bannerForm.getMessage(),
                     bannerForm.getHosts(),
-                    bannerForm.isDismissible(),
                     bannerForm.isActive(),
                     startTime,
                     endTime,
@@ -74,7 +73,6 @@ public class BannersHandler extends CrudHandler {
             paSystem.getBanners().updateBanner(bannerForm.getUuid(),
                     bannerForm.getMessage(),
                     bannerForm.getHosts(),
-                    bannerForm.isDismissible(),
                     bannerForm.isActive(),
                     startTime,
                     endTime,

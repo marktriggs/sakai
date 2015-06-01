@@ -12,16 +12,14 @@ public class BannerForm extends BaseForm {
     private String hosts;
     private String type;
     private boolean active;
-    private boolean dismissible;
 
-    private BannerForm(String uuid, String message, String hosts, long startTime, long endTime, boolean active, boolean dismissible, String type) {
+    private BannerForm(String uuid, String message, String hosts, long startTime, long endTime, boolean active, String type) {
         this.uuid = uuid;
         this.message = message;
         this.hosts = hosts;
         this.startTime = startTime;
         this.endTime = endTime;
         this.active = active;
-        this.dismissible = dismissible;
         this.type = type;
     }
 
@@ -34,7 +32,6 @@ public class BannerForm extends BaseForm {
                 existingBanner.getStartTime(),
                 existingBanner.getEndTime(),
                 existingBanner.isActive(),
-                existingBanner.isDismissible(),
                 existingBanner.getType());
     }
 
@@ -47,9 +44,8 @@ public class BannerForm extends BaseForm {
         long endTime = "".equals(request.getParameter("end_time")) ? 0 : parseTime(request.getParameter("end_time_selected_datetime"));
 
         boolean active = "on".equals(request.getParameter("active"));
-        boolean dismissible = "on".equals(request.getParameter("dismissible"));
 
-        return new BannerForm(uuid, message, hosts, startTime, endTime, active, dismissible, type);
+        return new BannerForm(uuid, message, hosts, startTime, endTime, active, type);
     }
 
     public void validate(ErrorReporter errors) {
