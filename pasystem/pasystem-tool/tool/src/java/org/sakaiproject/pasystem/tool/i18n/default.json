@@ -43,4 +43,10 @@
   "template_was_missing": "Could not find a template for the selected popup screen",
   "template_upload_failed": "Template file failed to upload",
   "pasystem-disabled": "The Public Announcement System has not been enabled.  Set <tt>pasystem.enabled=true</tt> in your properties file to activate it.",
+  "Template": "Template",
+  "Distribution": "Distribution",
+  "distribution_everyone": "Show this campaign to everyone",
+  "distribution_selected_users": "Show this campaign to selected users",
+  "Save Popup": "Save Popup",
+  "Cancel": "Cancel",
 }
