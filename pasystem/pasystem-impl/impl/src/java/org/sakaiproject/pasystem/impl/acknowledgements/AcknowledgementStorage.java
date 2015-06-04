@@ -31,7 +31,7 @@ public class AcknowledgementStorage {
 
                                 db.run("INSERT INTO " + tableName + " (uuid, user_eid, state, dismiss_time) values (?, ?, ?, ?)")
                                         .param(uuid)
-                                        .param(userEid)
+                                        .param(userEid.toLowerCase())
                                         .param(state)
                                         .param(System.currentTimeMillis())
                                         .executeUpdate();

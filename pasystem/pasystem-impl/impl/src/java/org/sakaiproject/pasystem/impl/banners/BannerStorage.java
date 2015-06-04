@@ -79,7 +79,7 @@ public class BannerStorage implements Banners, Acknowledger {
         final String sql = ("SELECT alert.*, dismissed.state as dismissed_state, dismissed.dismiss_time as dismissed_time" +
                 " from PASYSTEM_BANNER_ALERT alert" +
                 " LEFT OUTER JOIN PASYSTEM_BANNER_DISMISSED dismissed on dismissed.uuid = alert.uuid" +
-                "  AND ((? = '') OR lower(dismissed.user_eid) = ?)" +
+                "  AND ((? = '') OR dismissed.user_eid = ?)" +
                 " where ACTIVE = 1 AND" +
 
                 // And either hasn't been dismissed yet

@@ -47,11 +47,11 @@ public class PopupForUser {
 
                 // That is either assigned to the current user
                 " LEFT OUTER JOIN PASYSTEM_POPUP_ASSIGN assign " +
-                " on assign.uuid = popup.uuid AND lower(assign.user_eid) = ?" +
+                " on assign.uuid = popup.uuid AND assign.user_eid = ?" +
 
                 // Which the current user hasn't yet dismissed
                 " LEFT OUTER JOIN PASYSTEM_POPUP_DISMISSED dismissed " +
-                " on dismissed.uuid = popup.uuid AND lower(dismissed.user_eid) = ?" +
+                " on dismissed.uuid = popup.uuid AND dismissed.user_eid = ?" +
 
                 " WHERE " +
 
