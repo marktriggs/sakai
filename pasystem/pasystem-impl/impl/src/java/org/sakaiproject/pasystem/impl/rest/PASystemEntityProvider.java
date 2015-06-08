@@ -36,7 +36,7 @@ public class PASystemEntityProvider implements EntityProvider, AutoRegisterEntit
 
     @Override
     public String[] getHandledOutputFormats() {
-        return new String[]{Formats.JSON};
+        return new String[] { Formats.JSON };
     }
 
     @Override
