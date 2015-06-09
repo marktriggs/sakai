@@ -10,10 +10,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Locale;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.Map;
 
 public class JSONI18n implements I18n {
 
-    private JSONObject translations;
+    private Map<String, String> translations;
 
     public JSONI18n(ClassLoader loader, String resourceBase, Locale locale) {
         String language = "default";
@@ -34,14 +36,14 @@ public class JSONI18n implements I18n {
 
         try {
             JSONParser parser = new JSONParser();
-            translations = (JSONObject) parser.parse(new InputStreamReader(stream));
+            translations = new ConcurrentHashMap((JSONObject) parser.parse(new InputStreamReader(stream)));
         } catch (IOException | ParseException e) {
             throw new I18nException("Failure when reading I18n stream", e);
         }
     }
 
     public String t(String key) {
-        String result = (String) translations.get(key);
+        String result = translations.get(key);
 
         if (result == null) {
             throw new I18nException("Missing translation for key: " + key);
