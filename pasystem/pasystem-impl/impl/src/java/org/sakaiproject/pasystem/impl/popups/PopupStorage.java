@@ -54,24 +54,21 @@ public class PopupStorage implements Popups, Acknowledger {
                 );
     }
 
-    public boolean updateCampaign(Popup popup,
-                                  Optional<TemplateStream> templateInput,
-                                  Optional<List<String>> assignToUsers) {
-        return DB.transaction
+    public void updateCampaign(Popup popup,
+                               Optional<TemplateStream> templateInput,
+                               Optional<List<String>> assignToUsers) {
+        DB.transaction
                 ("Update an existing popup campaign",
-                        new DBAction<Boolean>() {
-                            public Boolean call(DBConnection db) throws SQLException {
+                        new DBAction<Void>() {
+                            public Void call(DBConnection db) throws SQLException {
 
-                                if (db.run("UPDATE PASYSTEM_POPUP_SCREENS SET descriptor = ?, start_time = ?, end_time = ?, open_campaign = ? WHERE uuid = ?")
+                                db.run("UPDATE PASYSTEM_POPUP_SCREENS SET descriptor = ?, start_time = ?, end_time = ?, open_campaign = ? WHERE uuid = ?")
                                         .param(popup.getDescriptor())
                                         .param(popup.getStartTime())
                                         .param(popup.getEndTime())
                                         .param(popup.isOpenCampaign() ? 1 : 0)
                                         .param(popup.getUuid())
-                                        .executeUpdate() == 0) {
-                                    LOG.warn("Failed to update popup with UUID: {}", popup.getUuid());
-                                    return false;
-                                }
+                                        .executeUpdate();
 
                                 setPopupAssignees(db, popup.getUuid(), assignToUsers);
 
@@ -83,7 +80,7 @@ public class PopupStorage implements Popups, Acknowledger {
 
                                 LOG.info("Update of popup {} completed", popup.getUuid());
 
-                                return true;
+                                return null;
                             }
                         }
                 );
