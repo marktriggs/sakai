@@ -13,8 +13,6 @@ public interface Banners extends Acknowledger {
 
     public void deleteBanner(String uuid);
 
-    public void setBannerActiveState(String uuid, boolean isActive);
-
     public List<Banner> getAll();
 
     public void clearTemporaryDismissedForUser(String userEid);

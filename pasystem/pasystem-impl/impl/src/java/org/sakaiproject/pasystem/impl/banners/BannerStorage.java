@@ -197,23 +197,6 @@ public class BannerStorage implements Banners, Acknowledger {
         );
     }
 
-    public void setBannerActiveState(String uuid, boolean isActive) {
-        DB.transaction("Set active state for banner with uuid " + uuid,
-                new DBAction<Void>() {
-                    public Void call(DBConnection db) throws SQLException {
-                        db.run("UPDATE PASYSTEM_BANNER_ALERT SET (active) VALUES (?) WHERE uuid = ?")
-                                .param(Integer.valueOf(isActive ? 1 : 0))
-                                .param(uuid)
-                                .executeUpdate();
-
-                        db.commit();
-
-                        return null;
-                    }
-                }
-        );
-    }
-
     public void acknowledge(final String uuid, final String userEid) {
         acknowledge(uuid, userEid, calculateAcknowledgementType(uuid));
     }
