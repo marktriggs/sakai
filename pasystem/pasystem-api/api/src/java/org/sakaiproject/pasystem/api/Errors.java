@@ -2,8 +2,10 @@ package org.sakaiproject.pasystem.api;
 
 import java.util.List;
 import java.util.ArrayList;
-
+import java.util.Map;
 import lombok.Value;
+import java.util.stream.Collectors;
+
 
 public class Errors {
 
@@ -35,4 +37,9 @@ public class Errors {
     public List<Error> toList() {
         return new ArrayList(errors);
     }
+
+    public Map<String, String> toMap() {
+        return errors.stream().collect(Collectors.toMap(Error::getField, Error::getErrorCode));
+    }
+
 }

@@ -13,6 +13,7 @@ import org.sakaiproject.entitybroker.entityprovider.capabilities.Describeable;
 import org.sakaiproject.entitybroker.entityprovider.capabilities.Outputable;
 import org.sakaiproject.entitybroker.entityprovider.extension.Formats;
 import org.sakaiproject.pasystem.api.PASystem;
+import org.sakaiproject.pasystem.api.Errors;
 import org.sakaiproject.site.api.Site;
 import org.sakaiproject.tool.cover.SessionManager;
 import org.sakaiproject.user.api.User;
@@ -81,6 +82,12 @@ public class PASystemAdminEntityProvider implements EntityProvider, AutoRegister
                     wp.getEpochMS("end_time"),
                     wp.getBoolean("is_open_campaign"));
 
+            Errors errors = popup.validate();
+
+            if (errors.hasErrors()) {
+                return respondWithError(errors);
+            }
+
             final String template = wp.getString("template");
             TemplateStream templateStream = new TemplateStream(new ByteArrayInputStream(template.getBytes()),
                     template.length());
@@ -124,12 +131,20 @@ public class PASystemAdminEntityProvider implements EntityProvider, AutoRegister
 
             WrappedParams wp = new WrappedParams(params);
 
-            String uuid = paSystem().getBanners().createBanner(new Banner(wp.getString("message"),
+            Banner banner = new Banner(wp.getString("message"),
                     wp.getString("hosts", ""),
                     wp.getBoolean("is_active"),
                     wp.getEpochMS("start_time"),
                     wp.getEpochMS("end_time"),
-                    wp.getString("type")));
+                    wp.getString("type"));
+
+            Errors errors = banner.validate();
+
+            if (errors.hasErrors()) {
+                return respondWithError(errors);
+            }
+
+            String uuid = paSystem().getBanners().createBanner(banner);
 
             JSONObject result = new JSONObject();
             result.put("status", "OK");
@@ -165,6 +180,14 @@ public class PASystemAdminEntityProvider implements EntityProvider, AutoRegister
         result.put("message", e.getMessage());
 
         LOG.error("Caught an error while handling a request", e);
+
+        return result.toJSONString();
+    }
+
+    private String respondWithError(Errors e) {
+        JSONObject result = new JSONObject();
+        result.put("status", "ERROR");
+        result.put("message", e.toMap());
 
         return result.toJSONString();
     }
