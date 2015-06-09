@@ -1,9 +1,9 @@
 package org.sakaiproject.pasystem.tool.forms;
 
 import lombok.Data;
+import org.sakaiproject.pasystem.api.Errors;
 import org.sakaiproject.pasystem.api.Banner;
 import javax.servlet.http.HttpServletRequest;
-import org.sakaiproject.pasystem.tool.handlers.ErrorReporter;
 
 @Data
 public class BannerForm extends BaseForm {
@@ -48,7 +48,9 @@ public class BannerForm extends BaseForm {
         return new BannerForm(uuid, message, hosts, startTime, endTime, active, type);
     }
 
-    public void validate(ErrorReporter errors) {
+    public Errors validate() {
+        Errors errors = new Errors();
+
         if (!hasValidStartTime()) {
             errors.addError("start_time", "invalid_time");
         }
@@ -57,10 +59,14 @@ public class BannerForm extends BaseForm {
             errors.addError("end_time", "invalid_time");
         }
 
-        if (!startTimeBeforeEndTime()) {
-            errors.addError("start_time", "start_time_after_end_time");
-            errors.addError("end_time", "start_time_after_end_time");
-        }
+        Errors modelErrors = toBanner().validate();
+
+        return errors.merge(modelErrors);
     }
+
+    public Banner toBanner() {
+        return new Banner(message, hosts, active, startTime, endTime, type);
+    }
+
 }
 

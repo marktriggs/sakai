@@ -31,13 +31,5 @@ class BaseForm {
     public boolean hasValidEndTime() {
         return endTime >= 0;
     }
-
-    public boolean startTimeBeforeEndTime() {
-        if (startTime <= 0 || endTime <= 0) {
-            return true;
-        } else {
-            return startTime <= endTime;
-        }
-    }
 }
 

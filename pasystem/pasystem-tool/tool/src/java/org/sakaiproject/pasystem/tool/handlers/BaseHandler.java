@@ -1,14 +1,15 @@
 package org.sakaiproject.pasystem.tool.handlers;
 
+import org.sakaiproject.pasystem.api.Errors;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-abstract class BaseHandler implements Handler, ErrorReporter {
+abstract class BaseHandler implements Handler {
 
-    private List<Error> errors;
+    private Errors errors;
     private Map<String, List<String>> flashMessages;
     private String redirectURI;
 
@@ -32,21 +33,21 @@ abstract class BaseHandler implements Handler, ErrorReporter {
         return redirectURI;
     }
 
-    public void addError(String field, String errorCode, String... values) {
-        if (errors == null) {
-            errors = new ArrayList<Error>();
-        }
+    public void addErrors(Errors other) {
+        getErrors().merge(other);
+    }
 
-        errors.add(new Error(field, errorCode, values));
+    public void addError(String field, String errorCode) {
+        getErrors().addError(field, errorCode);
     }
 
     protected boolean hasErrors() {
-        return !getErrors().isEmpty();
+        return getErrors().hasErrors();
     }
 
-    public List<Error> getErrors() {
+    public Errors getErrors() {
         if (errors == null) {
-            errors = new ArrayList<Error>();
+            errors = new Errors();
         }
 
         return errors;

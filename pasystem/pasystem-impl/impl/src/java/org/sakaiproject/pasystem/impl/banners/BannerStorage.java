@@ -37,7 +37,7 @@ public class BannerStorage implements Banners, Acknowledger {
                                         banners.add(new Banner(result.getString("uuid"),
                                                 result.getString("message"),
                                                 result.getString("hosts"),
-                                                result.getInt("active"),
+                                                (result.getInt("active") == 1),
                                                 result.getLong("start_time"),
                                                 result.getLong("end_time"),
                                                 result.getString("banner_type")));
@@ -62,7 +62,7 @@ public class BannerStorage implements Banners, Acknowledger {
                                         return Optional.of(new Banner(result.getString("uuid"),
                                                 result.getString("message"),
                                                 result.getString("hosts"),
-                                                result.getInt("active"),
+                                                (result.getInt("active") == 1),
                                                 result.getLong("start_time"),
                                                 result.getLong("end_time"),
                                                 result.getString("banner_type")));
@@ -107,7 +107,7 @@ public class BannerStorage implements Banners, Acknowledger {
                                         Banner alert = new Banner(result.getString("uuid"),
                                                 result.getString("message"),
                                                 result.getString("hosts"),
-                                                result.getInt("active"),
+                                                (result.getInt("active") == 1),
                                                 result.getLong("start_time"),
                                                 result.getLong("end_time"),
                                                 result.getString("banner_type"),

@@ -31,6 +31,7 @@ import org.sakaiproject.pasystem.api.TemplateStream;
 import org.sakaiproject.pasystem.api.Popup;
 import org.sakaiproject.pasystem.api.Banner;
 
+
 public class PASystemAdminEntityProvider implements EntityProvider, AutoRegisterEntityProvider, ActionsExecutable, Outputable, Describeable {
 
     private static final Logger LOG = LoggerFactory.getLogger(PASystemAdminEntityProvider.class);

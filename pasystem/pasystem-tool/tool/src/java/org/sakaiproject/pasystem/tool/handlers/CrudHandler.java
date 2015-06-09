@@ -10,7 +10,7 @@ public abstract class CrudHandler extends BaseHandler {
         String[] bits = request.getPathInfo().split("/");
 
         if (bits.length < 2) {
-            addError("uuid", "uuid_missing", request.getPathInfo());
+            addError("uuid", "uuid_missing");
             return "";
         } else {
             return bits[bits.length - 2];

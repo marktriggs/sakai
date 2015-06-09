@@ -4,6 +4,8 @@ import lombok.Getter;
 import java.util.Arrays;
 import java.util.Date;
 
+import static org.sakaiproject.pasystem.api.ValidationHelper.*;
+
 public class Banner implements Comparable<Banner> {
     @Getter
     private String uuid;
@@ -28,15 +30,19 @@ public class Banner implements Comparable<Banner> {
         LOW
     }
 
-    public Banner(String uuid, String message, String hosts, int active, long startTime, long endTime, String type) {
+    public Banner(String message, String hosts, boolean active, long startTime, long endTime, String type) {
+        this(null, message, hosts, active, startTime, endTime, type, false);
+    }
+
+    public Banner(String uuid, String message, String hosts, boolean active, long startTime, long endTime, String type) {
         this(uuid, message, hosts, active, startTime, endTime, type, false);
     }
 
-    public Banner(String uuid, String message, String hosts, int active, long startTime, long endTime, String type, boolean isDismissed) {
+    public Banner(String uuid, String message, String hosts, boolean active, long startTime, long endTime, String type, boolean isDismissed) {
         this.uuid = uuid;
         this.message = message;
         this.hosts = hosts;
-        this.isActive = (active == 1);
+        this.isActive = active;
         this.startTime = startTime;
         this.endTime = endTime;
         this.type = BannerType.valueOf(type.toUpperCase());
@@ -111,5 +117,16 @@ public class Banner implements Comparable<Banner> {
 
         // we have some hosts defined, so check if the current is listed
         return Arrays.asList(hosts.split(",")).contains(hostname);
+    }
+
+    public Errors validate() {
+        Errors errors = new Errors();
+
+        if (!startTimeBeforeEndTime(startTime, endTime)) {
+            errors.addError("start_time", "start_time_after_end_time");
+            errors.addError("end_time", "start_time_after_end_time");
+        }
+
+        return errors;
     }
 }

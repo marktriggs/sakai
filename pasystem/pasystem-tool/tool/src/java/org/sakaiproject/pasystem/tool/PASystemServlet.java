@@ -104,7 +104,7 @@ public class PASystemServlet extends HttpServlet {
                 response.sendRedirect(toolBaseURL + handler.getRedirect());
             } else {
                 context.put("flash", messages);
-                context.put("errors", handler.getErrors());
+                context.put("errors", handler.getErrors().toList());
 
                 if (Boolean.TRUE.equals(context.get("layout"))) {
                     response.getWriter().write(template.apply(context));

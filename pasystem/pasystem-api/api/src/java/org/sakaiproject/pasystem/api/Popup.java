@@ -2,6 +2,9 @@ package org.sakaiproject.pasystem.api;
 
 import lombok.Getter;
 
+import static org.sakaiproject.pasystem.api.ValidationHelper.*;
+
+
 public class Popup {
 
     @Getter
@@ -57,5 +60,16 @@ public class Popup {
         }
 
         return template;
+    }
+
+    public Errors validate() {
+        Errors errors = new Errors();
+
+        if (!startTimeBeforeEndTime(startTime, endTime)) {
+            errors.addError("start_time", "start_time_after_end_time");
+            errors.addError("end_time", "start_time_after_end_time");
+        }
+
+        return errors;
     }
 }

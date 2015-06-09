@@ -81,7 +81,7 @@ public class PopupsHandler extends CrudHandler {
         String uuid = extractId(request);
 
         PopupForm popupForm = PopupForm.fromRequest(uuid, request);
-        popupForm.validate(this, mode);
+        addErrors(popupForm.validate(mode));
 
         if (hasErrors()) {
             showEditForm(popupForm, context, mode);

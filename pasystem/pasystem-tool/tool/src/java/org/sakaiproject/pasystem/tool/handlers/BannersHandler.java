@@ -51,7 +51,7 @@ public class BannersHandler extends CrudHandler {
         String uuid = extractId(request);
         BannerForm bannerForm = BannerForm.fromRequest(uuid, request);
 
-        bannerForm.validate(this);
+        this.addErrors(bannerForm.validate());
 
         if (hasErrors()) {
             showEditForm(bannerForm, context, mode);

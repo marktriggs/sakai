@@ -1,5 +1,6 @@
 package org.sakaiproject.pasystem.tool.handlers;
 
+import org.sakaiproject.pasystem.api.Errors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
@@ -12,7 +13,7 @@ public interface Handler {
 
     public String getRedirect();
 
-    public List<Error> getErrors();
+    public Errors getErrors();
 
     public Map<String, List<String>> getFlashMessages();
 }

@@ -3,6 +3,7 @@ package org.sakaiproject.pasystem.tool.forms;
 import java.io.InputStream;
 import java.io.IOException;
 import lombok.Data;
+import org.sakaiproject.pasystem.api.Errors;
 import org.sakaiproject.pasystem.api.PASystem;
 import org.sakaiproject.pasystem.api.Popup;
 import org.sakaiproject.pasystem.api.TemplateStream;
@@ -11,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.apache.commons.fileupload.disk.DiskFileItem;
-import org.sakaiproject.pasystem.tool.handlers.ErrorReporter;
 import org.sakaiproject.pasystem.tool.handlers.CrudHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,7 +77,9 @@ public class PopupForm extends BaseForm {
         return new PopupForm(uuid, descriptor, startTime, endTime, isOpenCampaign, assignees, templateItem);
     }
 
-    public void validate(ErrorReporter errors, CrudHandler.CrudMode mode) {
+    public Errors validate(CrudHandler.CrudMode mode) {
+        Errors errors = new Errors();
+
         if (!hasValidStartTime()) {
             errors.addError("start_time", "invalid_time");
         }
@@ -86,14 +88,13 @@ public class PopupForm extends BaseForm {
             errors.addError("end_time", "invalid_time");
         }
 
-        if (!startTimeBeforeEndTime()) {
-            errors.addError("start_time", "start_time_after_end_time");
-            errors.addError("end_time", "start_time_after_end_time");
-        }
-
         if (CrudHandler.CrudMode.CREATE.equals(mode) && !templateItem.isPresent()) {
             errors.addError("template", "template_was_missing");
         }
+
+        Errors modelErrors = toPopup().validate();
+
+        return errors.merge(modelErrors);
     }
 
     public Optional<TemplateStream> getTemplateStream() {
