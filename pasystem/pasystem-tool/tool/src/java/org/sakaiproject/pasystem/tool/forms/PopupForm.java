@@ -70,8 +70,9 @@ public class PopupForm extends BaseForm {
         }
 
         Optional<DiskFileItem> templateItem = Optional.empty();
-        if (request.getAttribute("template") != null) {
-            templateItem = Optional.of((DiskFileItem)request.getAttribute("template"));
+        DiskFileItem dfi = (DiskFileItem) request.getAttribute("template");
+        if (dfi != null && dfi.getSize() > 0) {
+            templateItem = Optional.of(dfi);
         }
 
         return new PopupForm(uuid, descriptor, startTime, endTime, isOpenCampaign, assignees, templateItem);

@@ -124,12 +124,12 @@ public class PASystemAdminEntityProvider implements EntityProvider, AutoRegister
 
             WrappedParams wp = new WrappedParams(params);
 
-            String uuid = paSystem().getBanners().createBanner(wp.getString("message"),
+            String uuid = paSystem().getBanners().createBanner(new Banner(wp.getString("message"),
                     wp.getString("hosts", ""),
                     wp.getBoolean("is_active"),
                     wp.getEpochMS("start_time"),
                     wp.getEpochMS("end_time"),
-                    wp.getString("type"));
+                    wp.getString("type")));
 
             JSONObject result = new JSONObject();
             result.put("status", "OK");

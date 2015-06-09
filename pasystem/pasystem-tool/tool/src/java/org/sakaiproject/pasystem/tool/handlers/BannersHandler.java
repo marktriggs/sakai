@@ -58,25 +58,11 @@ public class BannersHandler extends CrudHandler {
             return;
         }
 
-        long startTime = bannerForm.getStartTime();
-        long endTime = bannerForm.getEndTime();
-
         if (CrudMode.CREATE.equals(mode)) {
-            paSystem.getBanners().createBanner(bannerForm.getMessage(),
-                    bannerForm.getHosts(),
-                    bannerForm.isActive(),
-                    startTime,
-                    endTime,
-                    bannerForm.getType());
+            paSystem.getBanners().createBanner(bannerForm.toBanner());
             flash("info", "banner_created");
         } else {
-            paSystem.getBanners().updateBanner(bannerForm.getUuid(),
-                    bannerForm.getMessage(),
-                    bannerForm.getHosts(),
-                    bannerForm.isActive(),
-                    startTime,
-                    endTime,
-                    bannerForm.getType());
+            paSystem.getBanners().updateBanner(bannerForm.getUuid(), bannerForm.toBanner());
             flash("info", "banner_updated");
         }
 

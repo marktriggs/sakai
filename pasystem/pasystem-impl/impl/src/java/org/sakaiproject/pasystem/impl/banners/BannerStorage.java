@@ -131,7 +131,7 @@ public class BannerStorage implements Banners, Acknowledger {
         return ServerConfigurationService.getInt("pasystem.banner.temporary-timeout-ms", (24 * 60 * 60 * 1000));
     }
 
-    public String createBanner(String message, String hosts, boolean isActive, long startTime, long endTime, String type) {
+    public String createBanner(Banner banner) {
         return DB.transaction("Create an banner",
                 new DBAction<String>() {
                     public String call(DBConnection db) throws SQLException {
@@ -139,12 +139,12 @@ public class BannerStorage implements Banners, Acknowledger {
 
                         db.run("INSERT INTO PASYSTEM_BANNER_ALERT (uuid, message, hosts, active, start_time, end_time, banner_type) VALUES (?, ?, ?, ?, ?, ?, ?)")
                                 .param(id)
-                                .param(message)
-                                .param(hosts)
-                                .param(Integer.valueOf(isActive ? 1 : 0))
-                                .param(startTime)
-                                .param(endTime)
-                                .param(type)
+                                .param(banner.getMessage())
+                                .param(banner.getHosts())
+                                .param(Integer.valueOf(banner.isActive() ? 1 : 0))
+                                .param(banner.getStartTime())
+                                .param(banner.getEndTime())
+                                .param(banner.getType())
                                 .executeUpdate();
 
                         db.commit();
@@ -155,17 +155,17 @@ public class BannerStorage implements Banners, Acknowledger {
         );
     }
 
-    public void updateBanner(String uuid, String message, String hosts, boolean isActive, long startTime, long endTime, String type) {
+    public void updateBanner(String uuid, Banner banner) {
         DB.transaction("Update banner with uuid " + uuid,
                 new DBAction<Void>() {
                     public Void call(DBConnection db) throws SQLException {
                         db.run("UPDATE PASYSTEM_BANNER_ALERT SET message = ?, hosts = ?, active = ?, start_time = ?, end_time = ?, banner_type = ? WHERE uuid = ?")
-                                .param(message)
-                                .param(hosts)
-                                .param(Integer.valueOf(isActive ? 1 : 0))
-                                .param(startTime)
-                                .param(endTime)
-                                .param(type)
+                                .param(banner.getMessage())
+                                .param(banner.getHosts())
+                                .param(Integer.valueOf(banner.isActive() ? 1 : 0))
+                                .param(banner.getStartTime())
+                                .param(banner.getEndTime())
+                                .param(banner.getType())
                                 .param(uuid)
                                 .executeUpdate();
 

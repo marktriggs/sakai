@@ -1,6 +1,5 @@
 package org.sakaiproject.pasystem.api;
 
-import org.sakaiproject.pasystem.api.Acknowledger;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
