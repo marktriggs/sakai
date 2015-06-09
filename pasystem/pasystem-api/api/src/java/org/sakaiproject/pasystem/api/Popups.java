@@ -10,8 +10,7 @@ public interface Popups extends Acknowledger {
                                  TemplateStream templateContent,
                                  Optional<List<String>> assignToUsers);
 
-    public boolean updateCampaign(final String uuid,
-                                  Popup popup,
+    public boolean updateCampaign(Popup popup,
                                   Optional<TemplateStream> templateInput,
                                   Optional<List<String>> assignToUsers);
 

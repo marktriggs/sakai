@@ -96,8 +96,7 @@ public class PopupsHandler extends CrudHandler {
                     Optional.of(popupForm.getAssignToUsers()));
             flash("info", "popup_created");
         } else {
-            paSystem.getPopups().updateCampaign(popupForm.getUuid(),
-                    popupForm.toPopup(),
+            paSystem.getPopups().updateCampaign(popupForm.toPopup(),
                     templateStream,
                     popupForm.isOpenCampaign() ? Optional.empty() : Optional.of(popupForm.getAssignToUsers()));
             flash("info", "popup_updated");

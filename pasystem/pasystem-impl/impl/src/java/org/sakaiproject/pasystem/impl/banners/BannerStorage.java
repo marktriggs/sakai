@@ -155,8 +155,8 @@ public class BannerStorage implements Banners, Acknowledger {
         );
     }
 
-    public void updateBanner(String uuid, Banner banner) {
-        DB.transaction("Update banner with uuid " + uuid,
+    public void updateBanner(Banner banner) {
+        DB.transaction("Update banner with uuid " + banner.getUuid(),
                 new DBAction<Void>() {
                     public Void call(DBConnection db) throws SQLException {
                         db.run("UPDATE PASYSTEM_BANNER_ALERT SET message = ?, hosts = ?, active = ?, start_time = ?, end_time = ?, banner_type = ? WHERE uuid = ?")
@@ -166,7 +166,7 @@ public class BannerStorage implements Banners, Acknowledger {
                                 .param(banner.getStartTime())
                                 .param(banner.getEndTime())
                                 .param(banner.getType())
-                                .param(uuid)
+                                .param(banner.getUuid())
                                 .executeUpdate();
 
                         db.commit();

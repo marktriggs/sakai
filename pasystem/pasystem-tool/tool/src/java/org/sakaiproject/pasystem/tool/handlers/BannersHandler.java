@@ -62,7 +62,7 @@ public class BannersHandler extends CrudHandler {
             paSystem.getBanners().createBanner(bannerForm.toBanner());
             flash("info", "banner_created");
         } else {
-            paSystem.getBanners().updateBanner(bannerForm.getUuid(), bannerForm.toBanner());
+            paSystem.getBanners().updateBanner(bannerForm.toBanner());
             flash("info", "banner_updated");
         }
 

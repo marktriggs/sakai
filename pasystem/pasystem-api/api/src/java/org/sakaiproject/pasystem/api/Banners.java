@@ -9,7 +9,7 @@ public interface Banners extends Acknowledger {
 
     public String createBanner(Banner banner);
 
-    public void updateBanner(String uuid, Banner banner);
+    public void updateBanner(Banner banner);
 
     public void deleteBanner(String uuid);
 

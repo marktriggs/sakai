@@ -65,7 +65,7 @@ public class BannerForm extends BaseForm {
     }
 
     public Banner toBanner() {
-        return new Banner(message, hosts, active, startTime, endTime, type);
+        return new Banner(uuid, message, hosts, active, startTime, endTime, type);
     }
 
 }

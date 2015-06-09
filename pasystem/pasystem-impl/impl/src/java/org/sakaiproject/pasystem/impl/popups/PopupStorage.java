@@ -54,8 +54,7 @@ public class PopupStorage implements Popups, Acknowledger {
                 );
     }
 
-    public boolean updateCampaign(String uuid,
-                                  Popup popup,
+    public boolean updateCampaign(Popup popup,
                                   Optional<TemplateStream> templateInput,
                                   Optional<List<String>> assignToUsers) {
         return DB.transaction
@@ -68,21 +67,21 @@ public class PopupStorage implements Popups, Acknowledger {
                                         .param(popup.getStartTime())
                                         .param(popup.getEndTime())
                                         .param(popup.isOpenCampaign() ? 1 : 0)
-                                        .param(uuid)
+                                        .param(popup.getUuid())
                                         .executeUpdate() == 0) {
-                                    LOG.warn("Failed to update popup with UUID: {}", uuid);
+                                    LOG.warn("Failed to update popup with UUID: {}", popup.getUuid());
                                     return false;
                                 }
 
-                                setPopupAssignees(db, uuid, assignToUsers);
+                                setPopupAssignees(db, popup.getUuid(), assignToUsers);
 
                                 if (templateInput.isPresent()) {
-                                    setPopupContent(db, uuid, templateInput.get());
+                                    setPopupContent(db, popup.getUuid(), templateInput.get());
                                 }
 
                                 db.commit();
 
-                                LOG.info("Update of popup {} completed", uuid);
+                                LOG.info("Update of popup {} completed", popup.getUuid());
 
                                 return true;
                             }
