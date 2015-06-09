@@ -168,24 +168,24 @@ class PASystemImpl implements PASystem {
     }
 
     private String getActiveBannersJSON() {
-        JSONArray alerts = new JSONArray();
+        JSONArray banners = new JSONArray();
         String serverId = ServerConfigurationService.getString("serverId", "localhost");
 
         User currentUser = UserDirectoryService.getCurrentUser();
 
         if (currentUser != null && currentUser.getEid() != null) {
-            for (Banner alert : getBanners().getRelevantAlerts(serverId, currentUser.getEid())) {
-                JSONObject alertData = new JSONObject();
-                alertData.put("id", alert.getUuid());
-                alertData.put("message", alert.getMessage());
-                alertData.put("dismissible", alert.isDismissible());
-                alertData.put("dismissed", alert.isDismissed());
-                alertData.put("type", alert.getType());
-                alerts.add(alertData);
+            for (Banner banner : getBanners().getRelevantBanners(serverId, currentUser.getEid())) {
+                JSONObject bannerData = new JSONObject();
+                bannerData.put("id", banner.getUuid());
+                bannerData.put("message", banner.getMessage());
+                bannerData.put("dismissible", banner.isDismissible());
+                bannerData.put("dismissed", banner.isDismissed());
+                bannerData.put("type", banner.getType());
+                banners.add(bannerData);
             }
         }
 
-        return alerts.toJSONString();
+        return banners.toJSONString();
     }
 
     private String getPopupsFooter(Handlebars handlebars, Map<String, Object> context) {

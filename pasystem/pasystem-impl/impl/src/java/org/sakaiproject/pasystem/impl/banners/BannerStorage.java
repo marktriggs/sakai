@@ -75,7 +75,7 @@ public class BannerStorage implements Banners, Acknowledger {
                 );
     }
 
-    public List<Banner> getRelevantAlerts(final String serverId, final String userEid) {
+    public List<Banner> getRelevantBanners(final String serverId, final String userEid) {
         final String sql = ("SELECT alert.*, dismissed.state as dismissed_state, dismissed.dismiss_time as dismissed_time" +
                 " from PASYSTEM_BANNER_ALERT alert" +
                 " LEFT OUTER JOIN PASYSTEM_BANNER_DISMISSED dismissed on dismissed.uuid = alert.uuid" +
@@ -91,10 +91,10 @@ public class BannerStorage implements Banners, Acknowledger {
                 " ORDER BY start_time");
 
         return DB.transaction
-                ("Find all active alerts for the server: " + serverId,
+                ("Find all active banners for the server: " + serverId,
                         new DBAction<List<Banner>>() {
                             public List<Banner> call(DBConnection db) throws SQLException {
-                                List<Banner> alerts = new ArrayList<Banner>();
+                                List<Banner> banners = new ArrayList<Banner>();
                                 try (DBResults results = db.run(sql)
                                         .param((userEid == null) ? "" : userEid.toLowerCase())
                                         .param((userEid == null) ? "" : userEid.toLowerCase())
@@ -104,7 +104,7 @@ public class BannerStorage implements Banners, Acknowledger {
                                                 (Acknowledger.TEMPORARY.equals(result.getString("dismissed_state")) &&
                                                         (System.currentTimeMillis() - result.getLong("dismissed_time")) < getTemporaryTimeoutMilliseconds());
 
-                                        Banner alert = new Banner(result.getString("uuid"),
+                                        Banner banner = new Banner(result.getString("uuid"),
                                                 result.getString("message"),
                                                 result.getString("hosts"),
                                                 (result.getInt("active") == 1),
@@ -113,14 +113,14 @@ public class BannerStorage implements Banners, Acknowledger {
                                                 result.getString("banner_type"),
                                                 hasBeenDismissed);
 
-                                        if (alert.isActiveForHost(serverId)) {
-                                            alerts.add(alert);
+                                        if (banner.isActiveForHost(serverId)) {
+                                            banners.add(banner);
                                         }
                                     }
 
-                                    Collections.sort(alerts);
+                                    Collections.sort(banners);
 
-                                    return alerts;
+                                    return banners;
                                 }
                             }
                         }
