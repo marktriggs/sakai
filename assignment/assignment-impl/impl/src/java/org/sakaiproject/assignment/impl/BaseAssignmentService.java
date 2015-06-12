@@ -4991,6 +4991,9 @@ public abstract class BaseAssignmentService implements AssignmentService, Entity
 		boolean withoutFolders = false;
 		boolean includeNotSubmitted = false;
 
+		// CLASSES-1700
+		boolean withSubfoldersForAll = false;
+
 		String viewString = "";
 		String contextString = "";
 		String searchString = "";
@@ -5074,6 +5077,13 @@ public abstract class BaseAssignmentService implements AssignmentService, Entity
 					// search and group filter only
 					searchFilterOnly = token.indexOf("=") != -1 ? token.substring(token.indexOf("=") + 1) : "";
 				}
+                // CLASSES-1700
+                else if (token.contains("includeSubfoldersForAll")) {
+                    withSubfoldersForAll = true;
+                }
+                else if (token.contains("flatPackage")) {
+                    withoutFolders = true;
+                }
 	        }
 		}
 
@@ -5105,8 +5115,10 @@ public abstract class BaseAssignmentService implements AssignmentService, Entity
 					if (allowGradeSubmission(aRef))
 					{
 					    zipGroupSubmissions(aRef, a.getTitle(), a.getContent().getTypeOfGradeString(a.getContent().getTypeOfGrade()), a.getContent().getTypeOfSubmission(),
-					            new SortedIterator(submissions.iterator(), new AssignmentComparator("submitterName", "true")), out, exceptionMessage, withStudentSubmissionText, withStudentSubmissionAttachment, withGradeFile, withFeedbackText, withFeedbackComment, withFeedbackAttachment,gradeFileFormat,includeNotSubmitted);
-                                
+					            new SortedIterator(submissions.iterator(), new AssignmentComparator("submitterName", "true")), out, exceptionMessage, withStudentSubmissionText, withStudentSubmissionAttachment, withGradeFile, withFeedbackText, withFeedbackComment, withFeedbackAttachment,gradeFileFormat,includeNotSubmitted,
+                                // CLASSES-1700
+                                withSubfoldersForAll);
+
 					    if (exceptionMessage.length() > 0)
 					    {
 					        // log any error messages
@@ -5130,10 +5142,10 @@ public abstract class BaseAssignmentService implements AssignmentService, Entity
 	
 				if (allowGradeSubmission(aRef))
 				{
-					AssignmentContent content = a.getContent();
-					zipSubmissions(aRef, a.getTitle(), content.getTypeOfGradeString(content.getTypeOfGrade()), content.getTypeOfSubmission(), 
-							new SortedIterator(submissions.iterator(), new AssignmentComparator("submitterName", "true")), out, exceptionMessage, withStudentSubmissionText, withStudentSubmissionAttachment, withGradeFile, withFeedbackText, withFeedbackComment, withFeedbackAttachment, withoutFolders,gradeFileFormat, includeNotSubmitted);
-
+					zipSubmissions(aRef, a.getTitle(), a.getContent().getTypeOfGradeString(a.getContent().getTypeOfGrade()), a.getContent().getTypeOfSubmission(), 
+							new SortedIterator(submissions.iterator(), new AssignmentComparator("submitterName", "true")), out, exceptionMessage, withStudentSubmissionText, withStudentSubmissionAttachment, withGradeFile, withFeedbackText, withFeedbackComment, withFeedbackAttachment, withoutFolders,gradeFileFormat, includeNotSubmitted,
+                            // CLASSES-1700
+                            withSubfoldersForAll);
 	
 					if (exceptionMessage.length() > 0)
 					{
@@ -5167,7 +5179,7 @@ public abstract class BaseAssignmentService implements AssignmentService, Entity
 		return cleanString;
 	}
 	
-	protected void zipGroupSubmissions(String assignmentReference, String assignmentTitle, String gradeTypeString, int typeOfSubmission, Iterator submissions, OutputStream outputStream, StringBuilder exceptionMessage, boolean withStudentSubmissionText, boolean withStudentSubmissionAttachment, boolean withGradeFile, boolean withFeedbackText, boolean withFeedbackComment, boolean withFeedbackAttachment,String gradeFileFormat, boolean includeNotSubmitted)
+	protected void zipGroupSubmissions(String assignmentReference, String assignmentTitle, String gradeTypeString, int typeOfSubmission, Iterator submissions, OutputStream outputStream, StringBuilder exceptionMessage, boolean withStudentSubmissionText, boolean withStudentSubmissionAttachment, boolean withGradeFile, boolean withFeedbackText, boolean withFeedbackComment, boolean withFeedbackAttachment,String gradeFileFormat, boolean includeNotSubmitted, boolean withSubfoldersForAll)
 	{
 	    ZipOutputStream out = null;
 	    try {
@@ -5340,6 +5352,14 @@ public abstract class BaseAssignmentService implements AssignmentService, Entity
 	                }
 	            } // if the user is still in site
 
+                // CLASSES-1700 create a folder (if one doesn't exist) for all groups
+                if (withSubfoldersForAll) {
+                    String submitterString = gs.getGroup().getTitle() + " (" + gs.getGroup().getId() + ")";
+                    String submitterDirectoryName = root.concat(StringUtil.trimToNull(submitterString)).concat("/");
+                    ZipEntry submitterDirectory = new ZipEntry(submitterDirectoryName);
+                    out.putNextEntry(new ZipEntry(submitterDirectory));
+                }
+
 	        } // while -- there is submission
 
 	        if (caughtException == null)
@@ -5380,7 +5400,82 @@ public abstract class BaseAssignmentService implements AssignmentService, Entity
 	    }
 	}
 
-	protected void zipSubmissions(String assignmentReference, String assignmentTitle, String gradeTypeString, int typeOfSubmission, Iterator submissions, OutputStream outputStream, StringBuilder exceptionMessage, boolean withStudentSubmissionText, boolean withStudentSubmissionAttachment, boolean withGradeFile, boolean withFeedbackText, boolean withFeedbackComment, boolean withFeedbackAttachment, boolean withoutFolders,String gradeFileFormat,boolean includeNotSubmitted)
+	private HSSFCellStyle setHeaderStyle(HSSFWorkbook sampleWorkBook){
+		//TO-DO read style information from sakai.properties
+		HSSFFont font = sampleWorkBook.createFont();
+		font.setFontName(HSSFFont.FONT_ARIAL);
+		font.setColor(IndexedColors.PLUM.getIndex());
+		font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+		HSSFCellStyle cellStyle = sampleWorkBook.createCellStyle();
+		cellStyle.setFont(font);
+		return cellStyle;
+	}
+	
+	private HSSFWorkbook createGradesWorkbook(String assignmentTitle,boolean isGroupSubmissions) {
+		HSSFWorkbook gradesWorkbook = new HSSFWorkbook();
+		HSSFSheet dataSheet = gradesWorkbook.createSheet(Validator.escapeZipEntry(assignmentTitle));
+		HSSFCellStyle cellStyle = setHeaderStyle(gradesWorkbook);	
+
+		//Excel file header row
+		HSSFRow headerRow = dataSheet.createRow(0);			
+		HSSFCell firstHeaderCell = headerRow.createCell(0);
+		firstHeaderCell.setCellStyle(cellStyle);
+		firstHeaderCell.setCellValue(new HSSFRichTextString(rb.getString("grades.id")));
+		HSSFCell secondHeaderCell = headerRow.createCell(1);
+		secondHeaderCell.setCellStyle(cellStyle);
+		secondHeaderCell.setCellValue(new HSSFRichTextString(rb.getString("grades.eid")));
+		if (!isGroupSubmissions) {
+			HSSFCell thirdHeaderCell = headerRow.createCell(2);
+			thirdHeaderCell.setCellStyle(cellStyle);
+			thirdHeaderCell.setCellValue(new HSSFRichTextString(rb.getString("grades.lastname")));			
+			HSSFCell fourthHeaderCell = headerRow.createCell(3);
+			fourthHeaderCell.setCellStyle(cellStyle);
+			fourthHeaderCell.setCellValue(new HSSFRichTextString(rb.getString("grades.firstname")));			
+			HSSFCell fifthHeaderCell = headerRow.createCell(4);
+			fifthHeaderCell.setCellStyle(cellStyle);
+			fifthHeaderCell.setCellValue(new HSSFRichTextString(rb.getString("grades.grade")));
+		} else {
+			HSSFCell thirdHeaderCell = headerRow.createCell(2);
+			thirdHeaderCell.setCellStyle(cellStyle);
+			thirdHeaderCell.setCellValue(new HSSFRichTextString(rb.getString("grades.members")));			
+			HSSFCell fifthHeaderCell = headerRow.createCell(3);
+			fifthHeaderCell.setCellStyle(cellStyle);
+			fifthHeaderCell.setCellValue(new HSSFRichTextString(rb.getString("grades.grade")));
+		}
+		return gradesWorkbook;
+	}
+	private void addExcelRowInfo(HSSFSheet dataSheet,int xlsRowCount,boolean isGroupSubmission,String submittersDisplayId, String submittersId,String submittersLastName,String submittersName,String grades) {
+		HSSFRow dataRow = dataSheet.createRow(xlsRowCount);
+	    //grades.id
+	    HSSFCell gradesidCell = dataRow.createCell(0);
+	    gradesidCell.setCellType(Cell.CELL_TYPE_STRING);
+	    gradesidCell.setCellValue(submittersDisplayId);
+	    //grades.eid
+	    HSSFCell gradeseidCell = dataRow.createCell(1);
+	    gradeseidCell.setCellType(Cell.CELL_TYPE_STRING);
+	    gradeseidCell.setCellValue(submittersId);
+	    //grades.lastname
+	    HSSFCell lastnameCell = dataRow.createCell(2);
+	    lastnameCell.setCellType(Cell.CELL_TYPE_STRING);
+	    lastnameCell.setCellValue(submittersLastName);
+	    if (!isGroupSubmission) {
+		    //grades.firstname
+		    HSSFCell firstnameCell = dataRow.createCell(3);
+		    firstnameCell.setCellType(Cell.CELL_TYPE_STRING);
+		    firstnameCell.setCellValue(submittersName);
+		    //grades.grade
+		    HSSFCell gradenameCell = dataRow.createCell(4);
+		    gradenameCell.setCellType(Cell.CELL_TYPE_STRING);
+		    gradenameCell.setCellValue(grades);
+	    } else {
+		    //grades.grade
+		    HSSFCell gradenameCell = dataRow.createCell(3);
+		    gradenameCell.setCellType(Cell.CELL_TYPE_STRING);
+		    gradenameCell.setCellValue(grades);	    	
+	    }
+   }
+	
+	protected void zipSubmissions(String assignmentReference, String assignmentTitle, String gradeTypeString, int typeOfSubmission, Iterator submissions, OutputStream outputStream, StringBuilder exceptionMessage, boolean withStudentSubmissionText, boolean withStudentSubmissionAttachment, boolean withGradeFile, boolean withFeedbackText, boolean withFeedbackComment, boolean withFeedbackAttachment, boolean withoutFolders,String gradeFileFormat, boolean includeNotSubmitted, boolean withSubfoldersForAll)
 	{
 	    ZipOutputStream out = null;
 
@@ -5603,6 +5698,38 @@ public abstract class BaseAssignmentService implements AssignmentService, Entity
 						break;
 					}
 				} // if the user is still in site
+
+                // CLASSES-1700 create a folder (if one doesn't exist) for all students
+                if (withSubfoldersForAll && !isAnon) {
+                    String submitterDirectoryName = root;
+                    User[] submitters = s.getSubmitters();
+                    String submittersString = "";
+                    for (int i = 0; i < submitters.length; i++) {
+                        if (i > 0) {
+                            submittersString = submittersString.concat("; ");
+                        }
+                        String fullName = submitters[i].getSortName();
+                        // in case the user doesn't have first name or last name
+                        if (fullName.indexOf(",") == -1) {
+                            fullName = fullName.concat(",");
+                        }
+                        submittersString = submittersString.concat(fullName);
+
+                        String userEid = submitters[i].getEid();
+                        String candidateEid = escapeInvalidCharsEntry(userEid);
+                        if (candidateEid.equals(userEid)) {
+                            submittersString = submittersString + "(" + candidateEid + ")";
+                        } else {
+                            submittersString = submittersString + "(" + submitters[i].getId() + ")";
+                        }
+                        submittersString = escapeInvalidCharsEntry(submittersString);
+                    }
+
+                    if (StringUtils.trimToNull(submittersString) != null) {
+                        submitterDirectoryName = submitterDirectoryName.concat(StringUtils.trimToNull(submittersString)).concat("/");
+                        out.putNextEntry(new ZipEntry(submitterDirectoryName));
+                    }
+                }
 
 			} // while -- there is submission
 
