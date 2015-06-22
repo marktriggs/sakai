@@ -10190,6 +10190,8 @@ public abstract class BaseAssignmentService implements AssignmentService, Entity
 		// SAK-29314
 		protected boolean m_isUserSubmission;
 
+        protected String m_reviewErrorDetails;
+	
 		protected Assignment m_asn;
 		/*
 		 * Helper method to add elements or attributes to a list
@@ -10363,6 +10365,54 @@ public abstract class BaseAssignmentService implements AssignmentService, Entity
 		public String getReviewStatus() {
 			return m_reviewStatus;
 		}
+		
+		public String getReviewErrorDetails(){
+			if (m_submittedAttachments.isEmpty()) {
+				M_log.debug(this.getId() + " getReviewErrorDetails No attachments submitted.");
+				return null;
+			}
+			else
+			{
+				try {
+					ContentResource cr = getFirstAcceptableAttachement();
+					if (cr == null )
+					{
+						M_log.debug(this + " getReviewErrorDetails No suitable attachments found in list");
+						return null;
+					}
+
+					String contentId = cr.getId();
+					List<ContentReviewItem> items = contentReviewService.getItemsByContentId(contentId);
+					if(items != null && items.size() > 0){
+						StringBuilder errorStr = new StringBuilder();
+						int index = 0;
+						for(ContentReviewItem item : items){
+							if(index > 0 && StringUtils.isNotEmpty(errorStr.toString())){
+								errorStr.append(" ");
+							}
+							if(item.getErrorCode() != null){
+								errorStr.append(item.getErrorCode());
+								if(StringUtils.isNotEmpty(item.getLastError())){
+									errorStr.append(": ");
+								}
+							}
+							if(StringUtils.isNotEmpty(item.getLastError())){
+								errorStr.append(item.getLastError());
+							}							
+							index++;
+						}
+						return errorStr.toString().replace("\"", "'");
+					}else{
+						return "No review item found in database";
+					}					
+				} catch (Exception e) {
+					//e.printStackTrace();
+					M_log.warn(this + ":getReviewErrorDetails() " + e.getMessage());
+					return null;
+				}
+
+			}
+		}
 
         public String getReviewError() {
         //	Code to get  error report
@@ -10455,7 +10505,8 @@ public abstract class BaseAssignmentService implements AssignmentService, Entity
 			m_reviewScore = -1;
 			m_reviewReport = "Not available yet";
             m_reviewError = "";
-			
+            m_reviewErrorDetails = "";
+            
 			m_id = id;
 			m_assignment = assignId;
 			m_properties = new BaseResourcePropertiesEdit();
@@ -10654,12 +10705,14 @@ public abstract class BaseAssignmentService implements AssignmentService, Entity
 			m_reviewReport = "no report available";
 			m_reviewStatus = "";
             m_reviewError = "";
+            m_reviewErrorDetails = "";
 			
 			//get the review Status from ContentReview rather than using old ones
 			if (contentReviewService != null) {
 				m_reviewStatus = this.getReviewStatus();
 				m_reviewScore  = this.getReviewScore();
                 m_reviewError = this.getReviewError();
+                m_reviewErrorDetails = this.getReviewErrorDetails();
 			}
 			
 			
@@ -10725,6 +10778,9 @@ public abstract class BaseAssignmentService implements AssignmentService, Entity
 							m_reviewReport = "no report available";
 							m_reviewStatus = "";
 							m_reviewError = "";
+							m_reviewErrorDetails = "";
+							
+							int numAttributes = 0;
 							String intString = null;
 							String attributeString = null;
 							String tempString = null;
@@ -10958,6 +11014,7 @@ public abstract class BaseAssignmentService implements AssignmentService, Entity
 				m_reviewStatus = submission.getReviewStatus();
 				// Error msg, if any from review service
 				m_reviewError = submission.getReviewError();
+				m_reviewErrorDetails = submission.getReviewErrorDetails();
 			}
 			
 			m_id = submission.getId();
@@ -12321,6 +12378,10 @@ public abstract class BaseAssignmentService implements AssignmentService, Entity
 		public void setIsUserSubmission(boolean isUserSubmission)
 		{
 			this.m_isUserSubmission = isUserSubmission;
+		}
+
+		public void setReviewErrorDetails(String errorDetails) {
+			this.m_reviewErrorDetails = errorDetails;
 		}
 
 	} // BaseAssignmentSubmissionEdit
