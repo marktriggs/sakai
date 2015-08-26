@@ -8686,6 +8686,10 @@ public class AssignmentAction extends PagedResourceActionII
                         M_log.warn(this + ":post_save_assignment at least one user in multiple groups.");
 	}
                 }
+
+		if(ac.getAllowReviewService()){
+			createTIIAssignment(ac, a.getReference(), openTime, dueTime, closeTime, state);
+		}
 	}
 
 	private void editAssignmentProperties(AssignmentEdit a, String checkAddDueTime, String checkAutoAnnounce, String addtoGradebook, String associateGradebookAssignment, String allowResubmitNumber, ResourcePropertiesEdit aPropertiesEdit, boolean post, Time closeTime, String checkAnonymousGrading)
@@ -8800,11 +8804,6 @@ public class AssignmentAction extends PagedResourceActionII
 		
 		// commit the changes
 		AssignmentService.commitEdit(ac);
-		
-		if(ac.getAllowReviewService()){
-		  createTIIAssignment(ac, assignmentRef, openTime, dueTime, closeTime, state);
-		}
-		
 	}
 	
 	public void createTIIAssignment(AssignmentContentEdit assign, String assignmentRef, Time openTime, Time dueTime, Time closeTime, SessionState state) {
