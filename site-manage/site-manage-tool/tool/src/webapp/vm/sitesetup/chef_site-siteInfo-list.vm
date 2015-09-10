@@ -142,6 +142,16 @@ function printPreview(target){
 					$!siteLocation
 				</td>
 			</tr>
+
+                        #if ($!siteInstructionMode)
+			<tr>
+				<th>Instruction Mode</th>
+				<td>
+					$!siteInstructionMode
+				</td>
+			</tr>
+                        #end
+
 			#end
 
 
