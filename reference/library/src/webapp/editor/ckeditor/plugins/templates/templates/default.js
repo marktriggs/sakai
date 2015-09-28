@@ -15,7 +15,7 @@ CKEDITOR.addTemplates("default", {
       title: "Two-Column Layout",
       image: "template2.gif",
       description: "A template that defines two columns, each with some text.",
-      html: '<table cellspacing="0" cellpadding="0" style="width:100%" border="0"><tr><td style="width:49.5%;vertical-align:top;">Text 1</td><td style="width:1%">&nbsp;</td><td style="width:49.5%;vertical-align:top;">Text 2</td></tr></table><p>More text goes here.</p>'
+      html: '<table role="presentation" cellspacing="0" cellpadding="0" style="width:100%" border="0"><tr><td style="width:49.5%;vertical-align:top;">Text 1</td><td style="width:1%">&nbsp;</td><td style="width:49.5%;vertical-align:top;">Text 2</td></tr></table><p>More text goes here.</p>'
     },
     {
       title: "Text and Table",
