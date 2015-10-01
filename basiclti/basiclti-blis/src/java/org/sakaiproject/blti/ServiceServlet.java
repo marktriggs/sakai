@@ -65,6 +65,7 @@ import org.apache.commons.logging.LogFactory;
 import org.imsglobal.basiclti.BasicLTIUtil;
 import org.sakaiproject.authz.api.Member;
 import org.sakaiproject.authz.api.Role;
+import org.sakaiproject.component.cover.HotReloadConfigurationService;
 import org.sakaiproject.component.cover.ServerConfigurationService;
 import org.sakaiproject.event.cover.UsageSessionService;
 import org.sakaiproject.id.cover.IdManager;
@@ -261,7 +262,7 @@ public class ServiceServlet extends HttpServlet {
 	@SuppressWarnings("unchecked")
 		protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-			String ipWhitelistRegex = ServerConfigurationService.getString("basiclti.outcomes.ip-whitelist-regex", "");
+			String ipWhitelistRegex = HotReloadConfigurationService.getString("basiclti.outcomes.ip-whitelist-regex", "");
 			if (!ipWhitelistRegex.isEmpty() && !isIPAddressAcceptable(request, ipWhitelistRegex)) {
 				M_log.warn("LTI Services blocked for IP=" + request.getRemoteAddr());
 				response.setStatus(HttpServletResponse.SC_FORBIDDEN);
