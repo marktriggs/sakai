@@ -50,6 +50,7 @@ import org.sakaiproject.authz.api.SecurityAdvisor;
 import org.sakaiproject.authz.api.SecurityAdvisor.SecurityAdvice;
 import org.sakaiproject.authz.api.SecurityService;
 import org.sakaiproject.component.cover.ComponentManager;
+import org.sakaiproject.component.cover.HotReloadConfigurationService;
 import org.sakaiproject.component.cover.ServerConfigurationService;
 import org.sakaiproject.entity.api.ResourceProperties;
 import org.sakaiproject.entity.api.ResourcePropertiesEdit;
@@ -1119,7 +1120,7 @@ public class SkinnableCharonPortal extends HttpServlet implements Portal
 
 
 	private void clearF5StickySession(HttpServletResponse res) {
-		String cookieName = ServerConfigurationService.getString("nyu.f5.cookie", null);
+		String cookieName = HotReloadConfigurationService.getString("nyu.f5.cookie", null);
 
 		if (cookieName != null) {
 			Cookie cookie = new Cookie(cookieName, null);
