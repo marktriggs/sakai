@@ -164,6 +164,8 @@ public class PDAHandler extends SiteHandler
 					//res.sendRedirect(req.getContextPath());
 					//SU-175 redirect to the full URL so user is taken to the Site/Tool instead of their Workspace
 					res.sendRedirect(req.getRequestURI());
+
+					return END;
 				}
 
 
