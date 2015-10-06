@@ -123,6 +123,24 @@ $(document).ready(function() {
 				#if($showQuota)
 				<li><span><a href="#toolLinkParam("ResourcesAction" "doShowQuota" "siteId=$validator.escapeUrl(${site.id})")" title="$clang.getString('list.quota')">$clang.getString("list.quota")</a></span></li>
 				#end
+				## CLASSES-1916 Show a jump to resource form for admin users
+				#if($showJumpToResourceForm)
+				<li class="inputItem">
+					<span class="formItem">
+						<form class="inlineForm" action="#toolForm("ResourcesAction")" method="post">
+							<input type="hidden" name="source" value="0" />
+							<input type="hidden" name="navRoot" value="" />
+							<input type="hidden" name="criteria" value="title" />
+							<input type="hidden" name="sakai_action" value="doNavigate" />
+							<input type="hidden" name="rt_action" value="" />
+							<input type="hidden" name="selectedItemId" value="" />
+							<input type="hidden" name="sakai_csrf_token" value="$sakai_csrf_token" />
+							<input type="text" name="collectionId" value=""/>
+							<input type="submit" value="Jump to Resource"/>
+						</form>
+					</span>
+				</li>
+				#end
 			</ul>
 	#end 
 	#if ($alertMessage)

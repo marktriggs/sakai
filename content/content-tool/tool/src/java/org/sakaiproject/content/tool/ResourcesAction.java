@@ -4138,6 +4138,8 @@ protected static final String PARAM_PAGESIZE = "collections_per_page";
 		boolean isSpecialSite = false;
 		if ("!admin".equals(currentSiteId) || "~admin".equals(currentSiteId)) {
 			isSpecialSite = true;
+			// CLASSES-1916 Show a jump to resource form for admin users
+			context.put("showJumpToResourceForm", true);
 		}
 		
 		
