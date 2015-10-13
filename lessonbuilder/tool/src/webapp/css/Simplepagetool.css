@@ -933,6 +933,11 @@ div[role="dialog"] {
     width:250px;
     display:block;
 }
+/* CLASSES-1931 */
+.direct-url-wrap,
+.tool-directurl {
+    display: none !important;
+}
 .portletTitle .title {
     padding: 2px 4px 6px 0;
     height: 1em;
