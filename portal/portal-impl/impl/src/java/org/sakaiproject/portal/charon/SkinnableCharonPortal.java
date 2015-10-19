@@ -873,6 +873,17 @@ public class SkinnableCharonPortal extends HttpServlet implements Portal
 			// an existing SSO session.  Bounce them back to the SSO
 			// server to complete their login to CLE.
 
+			// Since we know they don't have a Sakai session, we can
+			// safely redispatch them to a different server at this
+			// point.
+			//
+			// Note: This isn't exactly kosher because we'll end up
+			// sending multiple Set-Cookie headers for the same
+			// cookie here.  Browsers generally just take the last
+			// anyway, but if things go wrong we might need to stop
+			// doing this.
+			clearF5StickySession(req, res);
+
 			res.sendRedirect(ssoURL + "&target=" + getOriginalURL(req));
 
 			return true;
@@ -1096,7 +1107,7 @@ public class SkinnableCharonPortal extends HttpServlet implements Portal
 	public void doLogout(HttpServletRequest req, HttpServletResponse res,
 			Session session, String returnPath) throws ToolException
 	{
-		clearF5StickySession(res);
+		clearF5StickySession(req, res);
 	
 		// SAK-16370 to allow multiple logout urls
 		String loggedOutUrl = null;
@@ -1119,13 +1130,13 @@ public class SkinnableCharonPortal extends HttpServlet implements Portal
 	}
 
 
-	private void clearF5StickySession(HttpServletResponse res) {
+	private void clearF5StickySession(HttpServletRequest req, HttpServletResponse res) {
 		String cookieName = HotReloadConfigurationService.getString("nyu.f5.cookie", null);
 
 		if (cookieName != null) {
 			Cookie cookie = new Cookie(cookieName, null);
 			cookie.setPath("/");
-			cookie.setSecure(false);
+			cookie.setSecure("https".equals(req.getScheme()));
 			cookie.setMaxAge(0);
 			res.addCookie(cookie);
 		}

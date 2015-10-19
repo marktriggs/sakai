@@ -29,6 +29,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.component.api.ServerConfigurationService;
+import org.sakaiproject.component.cover.HotReloadConfigurationService;
 import org.sakaiproject.component.cover.ComponentManager;
 import org.sakaiproject.event.api.UsageSession;
 import org.sakaiproject.event.api.UsageSessionService;
@@ -313,6 +314,30 @@ public class RequestFilter implements Filter
 		return false;
 	}
 
+
+	private void ensureF5Cookie(HttpServletRequest req, HttpServletResponse resp) {
+		if (req.getRequestURI().endsWith("/portal/logout")) {
+			// We'll clear the cookie anyway, so don't set it.
+			return;
+		}
+
+		String cookieName = HotReloadConfigurationService.getString("nyu.f5.cookie", null);
+
+		if (cookieName != null) {
+			Cookie cookie = new Cookie(cookieName, null);
+			cookie.setPath("/");
+			cookie.setSecure("https".equals(req.getScheme()));
+
+			// session cookie
+			cookie.setMaxAge(-1);
+
+			cookie.setValue(System.getProperty(SAKAI_SERVERID));
+
+			addCookie(resp, cookie);
+		}
+	}
+
+
 	/**
 	 * Filter a request / response.
 	 */
@@ -419,6 +444,8 @@ public class RequestFilter implements Filter
 					}
 					M_log.debug(sb);
 				}
+
+				ensureF5Cookie(req, resp);
 
 				try
 				{
