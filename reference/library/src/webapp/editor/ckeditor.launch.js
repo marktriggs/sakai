@@ -219,6 +219,18 @@ sakai.editor.editors.ckeditor.launch = function(targetId, config, w, h) {
 			 //ckconfig.contentsCss = basePath+'/atd-ckeditor/atd.css';
 
 			 ckconfig.extraPlugins+="encodedimage,audiorecorder,movieplayer,wordcount,fmath_formula,audio,kalturaflash,magicembed,youtube,ckeditor_wiris";
+
+      // CLASSES-1937
+      if (sakai.editor.siteId && sakai.editor.templates) {
+        CKEDITOR.config.templates = sakai.editor.templates;
+        CKEDITOR.config.templates_files = sakai.editor.templates.split(",").map(function(template) {
+          if (template == "default") {
+            return CKEDITOR.getUrl( 'plugins/templates/templates/default.js' );
+          }
+
+          return CKEDITOR.getUrl( '../ckextraplugins/sitetemplates/' + template + '.js' );
+        });
+      }
     })();
 
 	  CKEDITOR.replace(targetId, ckconfig);

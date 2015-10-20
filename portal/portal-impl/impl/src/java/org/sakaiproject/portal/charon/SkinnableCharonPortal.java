@@ -1581,6 +1581,26 @@ public class SkinnableCharonPortal extends HttpServlet implements Portal
 		headJs.append("sakai.locale.userLanguage = '" + rloader.getLocale().getLanguage() + "';\n");
 		headJs.append("sakai.locale.userLocale = '" + rloader.getLocale().toString() + "';\n");
 		headJs.append("sakai.editor.collectionId = '" + portalService.getBrowserCollectionId(placement) + "';\n");
+
+		// CLASSES-1937 poke the site's CKEditor templates into the page if configured
+		if (placement != null) {
+			headJs.append("sakai.editor.siteId = '" + placement.getContext() + "';\n");
+			try {
+				Site site = siteHelper.getSiteVisit(placement.getContext());
+				if (site != null) {
+					ResourceProperties rp = site.getProperties();
+					String ckeditorTemplates = (String) rp.getProperty("ckeditor_templates");
+					if (ckeditorTemplates != null) {
+						headJs.append("sakai.editor.templates = '" + ckeditorTemplates + "';\n");
+					}
+				}
+			} catch (IdUnusedException e) {
+				M_log.debug("Site doesn't exist: " + placement.getContext());
+			} catch (PermissionException e) {
+				M_log.debug("User not able to access site: " + placement.getContext());
+			}
+		}
+
 		headJs.append("sakai.editor.enableResourceSearch = " + EditorConfiguration.enableResourceSearch() + ";</script>\n");
 		headJs.append(preloadScript);
 		headJs.append(editorScript);
