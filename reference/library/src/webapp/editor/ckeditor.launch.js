@@ -231,6 +231,9 @@ sakai.editor.editors.ckeditor.launch = function(targetId, config, w, h) {
           return CKEDITOR.getUrl( '../ckextraplugins/sitetemplates/' + template + '.js' );
         });
       }
+
+      // CLASSES-1943
+      CKEDITOR.config.templates_replaceContent = false;
     })();
 
 	  CKEDITOR.replace(targetId, ckconfig);
