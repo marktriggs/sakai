@@ -1135,6 +1135,17 @@ ul#otherSiteList li a span, ul.otherSitesCategorList li a span {
   font-family: 'nyu-classes-icons';
   content: '\e003';
 }
+.portletTitle .action a.external-help:after {
+  content: 'Get Help with this Tool';
+  font-size: 14px;
+  line-height: 28px;
+  vertical-align: inherit;
+  padding: 0 0 0 2px;
+  color: #555555;
+}
+.portletTitle .action a.external-help:hover:after {
+  color: #2F7FAB;
+}
 .portletTitle .action a#jsr-edit:before {
   font-family: 'nyu-classes-icons';
   content: '\e025';

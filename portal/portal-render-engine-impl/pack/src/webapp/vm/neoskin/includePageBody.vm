@@ -60,7 +60,7 @@
 
 						#if (${tool.toolShowHelpButton} && ${tool.usingExternalHelp})
                                                     #if (${tool.externalHelp})
-                                                       <a target="_blank" href="${tool.externalHelp.url}" title="${tool.externalHelp.label}">
+                                                       <a target="_blank" href="${tool.externalHelp.url}" title="${tool.externalHelp.label}" class="external-help">
                                                           <img src="/library/image/transparent.gif"  alt="$rloader.getFormattedMessage("sit_helpfor", $tool.toolRenderResult.title)" border="0" />
                                                                <span class="skip">${rloader.site_newwindow}</span>
                                                        </a>
@@ -95,7 +95,7 @@
 									<div class="action">
 						#if (${tool.toolShowHelpButton} && ${tool.usingExternalHelp})
                                                     #if (${tool.externalHelp})
-                                                       <a target="_blank" href="${tool.externalHelp.url}" title="${tool.externalHelp.label}">
+                                                       <a target="_blank" href="${tool.externalHelp.url}" title="${tool.externalHelp.label}" class="external-help">
                                                           <img src="/library/image/transparent.gif"  alt="$rloader.getFormattedMessage("sit_helpfor", $tool.toolRenderResult.title)" border="0" />
                                                                <span class="skip">${rloader.site_newwindow}</span>
                                                        </a>
@@ -180,7 +180,7 @@
 						#end
 						#if (${tool.toolShowHelpButton} && ${tool.usingExternalHelp})
                                                     #if (${tool.externalHelp})
-                                                       <a target="_blank" href="${tool.externalHelp.url}" title="${tool.externalHelp.label}">
+                                                       <a target="_blank" href="${tool.externalHelp.url}" title="${tool.externalHelp.label}" class="external-help">
                                                           <img src="/library/image/transparent.gif"  alt="$rloader.getFormattedMessage("sit_helpfor", $tool.toolRenderResult.title)" border="0" />
                                                                <span class="skip">${rloader.site_newwindow}</span>
                                                        </a>
@@ -215,7 +215,7 @@
 									<div class="action">
 						#if (${tool.toolShowHelpButton} && ${tool.usingExternalHelp})
                                                     #if (${tool.externalHelp})
-                                                       <a target="_blank" href="${tool.externalHelp.url}" title="${tool.externalHelp.label}">
+                                                       <a target="_blank" href="${tool.externalHelp.url}" title="${tool.externalHelp.label}" class="external-help">
                                                           <img src="/library/image/transparent.gif"  alt="$rloader.getFormattedMessage("sit_helpfor", $tool.toolRenderResult.title)" border="0" />
                                                                <span class="skip">${rloader.site_newwindow}</span>
                                                        </a>

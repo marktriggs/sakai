@@ -2344,6 +2344,7 @@ table.tablesorter .header {
   padding: 0 6px;
   line-height: 26px;
   height: 26px;
+  width: auto;
   vertical-align: top;
 
   background: none !important;
@@ -2370,6 +2371,17 @@ table.tablesorter .header {
 .neoPortletTitleWrap .portletTitle .action a.help:before {
   font-family: 'nyu-classes-icons';
   content: '\e003';
+}
+.neoPortletTitleWrap .portletTitle .action a.help:after {
+  content: 'Get Help with this Tool';
+  font-size: 14px;
+  line-height: 27px;
+  vertical-align: inherit;
+  padding: 0 0 0 2px;
+  color: #555555;
+}
+.neoPortletTitleWrap .portletTitle .action a.help:hover:after {
+  color: #2F7FAB;
 }
 .neoPortletTitleWrap .portletTitle .action img {
     display: none;
