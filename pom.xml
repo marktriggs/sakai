@@ -79,6 +79,7 @@
                 <module>external-calendaring-service</module>
                 <module>evaluation</module>
                 <module>gradebook</module>
+                <module>groupersync</module>
                 <module>help</module>
                 <module>hierarchy</module>
                 <module>jobscheduler</module>
