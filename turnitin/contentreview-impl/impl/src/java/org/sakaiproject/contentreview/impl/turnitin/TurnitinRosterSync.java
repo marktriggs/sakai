@@ -1,6 +1,6 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/contrib/turnitin/trunk/contentreview-impl/impl/src/java/org/sakaiproject/contentreview/impl/turnitin/TurnitinReviewServiceImpl.java $
- * $Id: TurnitinReviewServiceImpl.java 69345 2010-07-22 08:11:44Z david.horwitz@uct.ac.za $
+ * $URL$
+ * $Id$
  ***********************************************************************************
  *
  * Copyright (c) 2006 Sakai Foundation
@@ -272,7 +272,7 @@ public class TurnitinRosterSync {
 			log.debug("User " + userId + " has no last name");
 			throw new SubmissionException ("User has no last name");
 		}
-		String dis = (turnitinConn.isInstructorAccountNotified()) ? "0" : "1";
+		String dis = turnitinConn.isInstructorAccountNotified() ? "1" : "0";
 
 		Document document = null;
 
