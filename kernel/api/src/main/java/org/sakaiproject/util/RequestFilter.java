@@ -346,20 +346,28 @@ public class RequestFilter implements Filter
 	{
 		StringBuffer sb = null;
 		long startTime = System.currentTimeMillis();
+		boolean threadRenamed = false;
+		String thisThreadName = Thread.currentThread().getName();
 
-		// bind some preferences as "current"
-		Boolean curRemoteUser = (Boolean) ThreadLocalManager.get(CURRENT_REMOTE_USER);
-		Integer curHttpSession = (Integer) ThreadLocalManager.get(CURRENT_HTTP_SESSION);
-		String curContext = (String) ThreadLocalManager.get(CURRENT_CONTEXT);
-		ServletRequest curRequest = (ServletRequest) ThreadLocalManager.get(CURRENT_HTTP_REQUEST);
-		ServletResponse curResponse = (ServletResponse) ThreadLocalManager.get(CURRENT_HTTP_RESPONSE);
-		boolean cleared = false;
+		try {
+		    if (thisThreadName != null && thisThreadName.startsWith("http-bio")) {
+			threadRenamed = true;
+			Thread.currentThread().setName(thisThreadName + "::" + startTime);
+		    }
 
-		// keep track of temp files with this request that need to be deleted on the way out
-		List<FileItem> tempFiles = new ArrayList<FileItem>();
+		    // bind some preferences as "current"
+		    Boolean curRemoteUser = (Boolean) ThreadLocalManager.get(CURRENT_REMOTE_USER);
+		    Integer curHttpSession = (Integer) ThreadLocalManager.get(CURRENT_HTTP_SESSION);
+		    String curContext = (String) ThreadLocalManager.get(CURRENT_CONTEXT);
+		    ServletRequest curRequest = (ServletRequest) ThreadLocalManager.get(CURRENT_HTTP_REQUEST);
+		    ServletResponse curResponse = (ServletResponse) ThreadLocalManager.get(CURRENT_HTTP_RESPONSE);
+		    boolean cleared = false;
 
-		try
-		{
+		    // keep track of temp files with this request that need to be deleted on the way out
+		    List<FileItem> tempFiles = new ArrayList<FileItem>();
+
+		    try
+		    {
 			ThreadLocalManager.set(CURRENT_REMOTE_USER, Boolean.valueOf(m_sakaiRemoteUser));
 			ThreadLocalManager.set(CURRENT_HTTP_SESSION, Integer.valueOf(m_sakaiHttpSession));
 			ThreadLocalManager.set(CURRENT_CONTEXT, m_contextId);
@@ -370,9 +378,9 @@ public class RequestFilter implements Filter
 			// we are expecting HTTP stuff
 			if (!((requestObj instanceof HttpServletRequest) && (responseObj instanceof HttpServletResponse)))
 			{
-				// if not, just pass it through
-				chain.doFilter(requestObj, responseObj);
-				return;
+			    // if not, just pass it through
+			    chain.doFilter(requestObj, responseObj);
+			    return;
 			}
 
 			HttpServletRequest req = (HttpServletRequest) requestObj;
@@ -388,21 +396,21 @@ public class RequestFilter implements Filter
 			// 2) any GET URL's from contentPaths (POST's any other methods not
 			//    allowed.
 			if (useContentHostingDomain) {
-				String requestURI = req.getRequestURI();
-				if (startsWithAny(requestURI, contentPaths) && "GET".equalsIgnoreCase(req.getMethod())) {
-					if  (!req.getServerName().equals(chsDomain) && !(startsWithAny(requestURI, contentExceptions))) {
-						resp.sendRedirect(chsUrl+requestURI);
-						return;
-					}
+			    String requestURI = req.getRequestURI();
+			    if (startsWithAny(requestURI, contentPaths) && "GET".equalsIgnoreCase(req.getMethod())) {
+				if  (!req.getServerName().equals(chsDomain) && !(startsWithAny(requestURI, contentExceptions))) {
+				    resp.sendRedirect(chsUrl+requestURI);
+				    return;
 				}
-				else {
-					if (req.getServerName().equals(chsDomain) &&
-						!(startsWithAny(requestURI, contentPaths) && !"GET".equalsIgnoreCase(req.getMethod())) &&
-						!(startsWithAny(requestURI, loginPaths))) {
-						resp.sendRedirect(appUrl+requestURI);
-						return;
-					}
+			    }
+			    else {
+				if (req.getServerName().equals(chsDomain) &&
+					!(startsWithAny(requestURI, contentPaths) && !"GET".equalsIgnoreCase(req.getMethod())) &&
+					!(startsWithAny(requestURI, loginPaths))) {
+				    resp.sendRedirect(appUrl+requestURI);
+				    return;
 				}
+			    }
 			}
 
 			// check on file uploads and character encoding BEFORE checking if
@@ -421,142 +429,142 @@ public class RequestFilter implements Filter
 			// if we have already filtered this request, pass it on
 			if (req.getAttribute(ATTR_FILTERED) != null)
 			{
-				// set the request and response for access via the thread local
-				ThreadLocalManager.set(CURRENT_HTTP_REQUEST, req);
-				ThreadLocalManager.set(CURRENT_HTTP_RESPONSE, resp);
+			    // set the request and response for access via the thread local
+			    ThreadLocalManager.set(CURRENT_HTTP_REQUEST, req);
+			    ThreadLocalManager.set(CURRENT_HTTP_RESPONSE, resp);
 
-				chain.doFilter(req, resp);
+			    chain.doFilter(req, resp);
 			}
 
 			// filter the request
 			else
 			{
-				if (M_log.isDebugEnabled())
+			    if (M_log.isDebugEnabled())
+			    {
+				sb = new StringBuffer("http-request: ");
+				sb.append(req.getMethod());
+				sb.append(" ");
+				sb.append(req.getRequestURL());
+				if (req.getQueryString() != null)
 				{
-					sb = new StringBuffer("http-request: ");
-					sb.append(req.getMethod());
-					sb.append(" ");
-					sb.append(req.getRequestURL());
-					if (req.getQueryString() != null)
+				    sb.append("?");
+				    sb.append(req.getQueryString());
+				}
+				M_log.debug(sb);
+			    }
+
+			    ensureF5Cookie(req, resp);
+
+			    try
+			    {
+				// mark the request as filtered to avoid re-filtering it later in the request processing
+				req.setAttribute(ATTR_FILTERED, ATTR_FILTERED);
+
+				// some useful info
+				ThreadLocalManager.set(ServerConfigurationService.CURRENT_SERVER_URL, serverUrl(req));
+
+				// make sure we have a session
+				Session s = assureSession(req, resp);
+
+				// pre-process request
+				req = preProcessRequest(s, req);
+
+				// detect a tool placement and set the current tool session
+				detectToolPlacement(s, req);
+
+				// pre-process response
+				resp = preProcessResponse(s, req, resp);
+
+				// set the request and response for access via the thread local
+				ThreadLocalManager.set(CURRENT_HTTP_REQUEST, req);
+				ThreadLocalManager.set(CURRENT_HTTP_RESPONSE, resp);
+
+				// set the portal into thread local
+				if (m_contextId != null && m_contextId.length() > 0)
+				{
+				    ThreadLocalManager.set(ServerConfigurationService.CURRENT_PORTAL_PATH, "/" + m_contextId);
+				}
+
+				// Only synchronize on session for Terracotta. See KNL-218, KNL-75.
+				if (TERRACOTTA_CLUSTER) {
+				    synchronized(s) {
+					// Pass control on to the next filter or the servlet
+					chain.doFilter(req, resp);
+
+					// post-process response
+					postProcessResponse(s, req, resp);
+				    }
+				} else {
+				    // Pass control on to the next filter or the servlet
+				    chain.doFilter(req, resp);
+
+				    // post-process response
+				    postProcessResponse(s, req, resp);
+				}
+
+				// Output client cookie if requested to do so
+				if (s != null && req.getAttribute(ATTR_SET_COOKIE) != null) {
+
+				    // check for existing cookie
+				    String suffix = getCookieSuffix();
+				    Cookie c = findCookie(req, cookieName, suffix);
+
+				    // the cookie value we need to use
+				    String sessionId = s.getId() + DOT + suffix;
+
+				    // set the cookie if necessary
+				    if ((c == null) || (!c.getValue().equals(sessionId))) {
+					c = new Cookie(cookieName, sessionId);
+					c.setPath("/");
+					c.setMaxAge(-1);
+					if (cookieDomain != null)
 					{
-						sb.append("?");
-						sb.append(req.getQueryString());
+					    c.setDomain(cookieDomain);
 					}
-					M_log.debug(sb);
-				}
-
-				ensureF5Cookie(req, resp);
-
-				try
-				{
-					// mark the request as filtered to avoid re-filtering it later in the request processing
-					req.setAttribute(ATTR_FILTERED, ATTR_FILTERED);
-
-					// some useful info
-					ThreadLocalManager.set(ServerConfigurationService.CURRENT_SERVER_URL, serverUrl(req));
-
-					// make sure we have a session
-					Session s = assureSession(req, resp);
-
-					// pre-process request
-					req = preProcessRequest(s, req);
-
-					// detect a tool placement and set the current tool session
-					detectToolPlacement(s, req);
-
-					// pre-process response
-					resp = preProcessResponse(s, req, resp);
-
-					// set the request and response for access via the thread local
-					ThreadLocalManager.set(CURRENT_HTTP_REQUEST, req);
-					ThreadLocalManager.set(CURRENT_HTTP_RESPONSE, resp);
-
-					// set the portal into thread local
-					if (m_contextId != null && m_contextId.length() > 0)
+					if (req.isSecure() == true)
 					{
-						ThreadLocalManager.set(ServerConfigurationService.CURRENT_PORTAL_PATH, "/" + m_contextId);
+					    c.setSecure(true);
 					}
-
-					// Only synchronize on session for Terracotta. See KNL-218, KNL-75.
-					if (TERRACOTTA_CLUSTER) {
-						synchronized(s) {
-							// Pass control on to the next filter or the servlet
-							chain.doFilter(req, resp);
-
-							// post-process response
-							postProcessResponse(s, req, resp);
-						}
-					} else {
-						// Pass control on to the next filter or the servlet
-						chain.doFilter(req, resp);
-
-						// post-process response
-						postProcessResponse(s, req, resp);
-					}
-
-					// Output client cookie if requested to do so
-					if (s != null && req.getAttribute(ATTR_SET_COOKIE) != null) {
-
-						// check for existing cookie
-						String suffix = getCookieSuffix();
-						Cookie c = findCookie(req, cookieName, suffix);
-
-						// the cookie value we need to use
-						String sessionId = s.getId() + DOT + suffix;
-
-						// set the cookie if necessary
-						if ((c == null) || (!c.getValue().equals(sessionId))) {
-							c = new Cookie(cookieName, sessionId);
-							c.setPath("/");
-							c.setMaxAge(-1);
-							if (cookieDomain != null)
-							{
-								c.setDomain(cookieDomain);
-							}
-							if (req.isSecure() == true)
-							{
-								c.setSecure(true);
-							}
-							addCookie(resp, c);
-						}
-					}
-
-
+					addCookie(resp, c);
+				    }
 				}
-				catch (RuntimeException t)
-				{
-					M_log.warn("", t);
-					throw t;
-				}
-				catch (IOException ioe)
-				{
-					M_log.warn("", ioe);
-					throw ioe;
-				}
-				catch (ServletException se)
-				{
-					M_log.warn(se.getMessage(), se);
-					throw se;
-				}
-				finally
-				{
-					// clear any bound current values
-					ThreadLocalManager.clear();
-					cleared = true;
-				}
+
+
+			    }
+			    catch (RuntimeException t)
+			    {
+				M_log.warn("", t);
+				throw t;
+			    }
+			    catch (IOException ioe)
+			    {
+				M_log.warn("", ioe);
+				throw ioe;
+			    }
+			    catch (ServletException se)
+			    {
+				M_log.warn(se.getMessage(), se);
+				throw se;
+			    }
+			    finally
+			    {
+				// clear any bound current values
+				ThreadLocalManager.clear();
+				cleared = true;
+			    }
 			}
 
-		}
-		finally
-		{
+		    }
+		    finally
+		    {
 			if (!cleared)
 			{
-				// restore the "current" bindings
-				ThreadLocalManager.set(CURRENT_REMOTE_USER, curRemoteUser);
-				ThreadLocalManager.set(CURRENT_HTTP_SESSION, curHttpSession);
-				ThreadLocalManager.set(CURRENT_CONTEXT, curContext);
-				ThreadLocalManager.set(CURRENT_HTTP_REQUEST, curRequest);
-				ThreadLocalManager.set(CURRENT_HTTP_RESPONSE, curResponse);
+			    // restore the "current" bindings
+			    ThreadLocalManager.set(CURRENT_REMOTE_USER, curRemoteUser);
+			    ThreadLocalManager.set(CURRENT_HTTP_SESSION, curHttpSession);
+			    ThreadLocalManager.set(CURRENT_CONTEXT, curContext);
+			    ThreadLocalManager.set(CURRENT_HTTP_REQUEST, curRequest);
+			    ThreadLocalManager.set(CURRENT_HTTP_RESPONSE, curResponse);
 			}
 
 			// delete any temp files
@@ -564,9 +572,14 @@ public class RequestFilter implements Filter
 
 			if (M_log.isDebugEnabled() && sb != null)
 			{
-				long elapsedTime = System.currentTimeMillis() - startTime;
-				M_log.debug("request timing (ms): " + elapsedTime + " for " + sb);
+			    long elapsedTime = System.currentTimeMillis() - startTime;
+			    M_log.debug("request timing (ms): " + elapsedTime + " for " + sb);
 			}
+		    }
+		} finally {
+		    if (threadRenamed) {
+			Thread.currentThread().setName(thisThreadName);
+		    }
 		}
 	}
 
