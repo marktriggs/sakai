@@ -97,6 +97,28 @@ $(document).ready(function() {
 	    });
 	});	
 	})
+
+	#if($showJumpToResourceForm)
+	$(function() {
+		var formEl = $("#jumpToResourceForm");
+		var collectionIdEl = formEl.find(":input[name=collectionId]");
+
+		formEl.on("submit", function() {
+			var collectionId = collectionIdEl.val();
+
+			if (collectionId.length == 0) {
+				return false;
+			}
+
+			if (collectionId.match(/\/$/) == null) {
+				collectionId += "/";
+				collectionIdEl.val(collectionId);
+			}
+
+			return true;
+		});
+	});
+	#end
 </script>
 #**#
 #set($num = 0)
@@ -127,7 +149,7 @@ $(document).ready(function() {
 				#if($showJumpToResourceForm)
 				<li class="inputItem">
 					<span class="formItem">
-						<form class="inlineForm" action="#toolForm("ResourcesAction")" method="post">
+						<form id="jumpToResourceForm" class="inlineForm" action="#toolForm("ResourcesAction")" method="post">
 							<input type="hidden" name="source" value="0" />
 							<input type="hidden" name="navRoot" value="" />
 							<input type="hidden" name="criteria" value="title" />
@@ -135,8 +157,8 @@ $(document).ready(function() {
 							<input type="hidden" name="rt_action" value="" />
 							<input type="hidden" name="selectedItemId" value="" />
 							<input type="hidden" name="sakai_csrf_token" value="$sakai_csrf_token" />
-							<input type="text" name="collectionId" value=""/>
-							<input type="submit" value="Jump to Resource"/>
+							<input type="text" name="collectionId" value="" required/>
+							<input type="submit" value="$clang.getString('list.jumptoresource')"/>
 						</form>
 					</span>
 				</li>
