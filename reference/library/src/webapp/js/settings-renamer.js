@@ -4,14 +4,9 @@ var SETTINGS_TOOL_LABEL = 'Site Groups';
 function PortalRenamer() {
     "use strict";
 
-    var $toolMenuItems = $();
-
-    $('.toolMenuLink').each(function (idx, link) {
-        var title = $(link).find('.menuTitle');
-        if (title.text() === OLD_TOOL_LABEL) {
-            $toolMenuItems = $toolMenuItems.add($(link));
-        }
-    });
+    var $toolMenuItems = $('.toolMenuLink').filter(function() {
+                                                     return $(this).find('.menuTitle').text() === OLD_TOOL_LABEL;
+                                                   });
 
     return {
         displayAsHiddenFromStudents: function () {
@@ -44,13 +39,9 @@ function PortalRenamer() {
 function PDARenamer() {
     "use strict";
 
-    var $toolMenuItems = $();
-
-    $('#pda-portlet-page-menu li a').each(function (idx, link) {
-        if ($(link).text() === OLD_TOOL_LABEL) {
-            $toolMenuItems = $toolMenuItems.add($(link));
-        }
-    });
+    var $toolMenuItems = $('#pda-portlet-page-menu li a').filter(function() {
+                                                            return $(this).text() === OLD_TOOL_LABEL;
+                                                         });
 
     return {
         displayAsHiddenFromStudents: function () {
