@@ -24,6 +24,7 @@
 package org.sakaiproject.tool.assessment.ui.listener.delivery;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -1431,13 +1432,15 @@ public class DeliveryActionListener
     	  }
       }
 
-      // Never randomize Fill-in-the-blank or Numeric Response, always randomize matching
-      if (randomize && !(item.getTypeId().equals(TypeIfc.FILL_IN_BLANK)||
-    		  item.getTypeId().equals(TypeIfc.FILL_IN_NUMERIC) || 
-    		  item.getTypeId().equals(TypeIfc.MATRIX_CHOICES_SURVEY) ||
-    		  item.getTypeId().equals(TypeIfc.CALCULATED_QUESTION)) || // CALCULATED_QUESTION
-    		  item.getTypeId().equals(TypeIfc.IMAGEMAP_QUESTION) || // IMAGEMAP_QUESTION
-    		  item.getTypeId().equals(TypeIfc.MATCHING))
+      List<Long> alwaysRandomizeTypes = Arrays.asList(TypeIfc.MATCHING);
+      List<Long> neverRandomizeTypes = Arrays.asList(TypeIfc.FILL_IN_BLANK,
+              TypeIfc.FILL_IN_NUMERIC,
+              TypeIfc.MATRIX_CHOICES_SURVEY,
+              TypeIfc.CALCULATED_QUESTION,
+              TypeIfc.IMAGEMAP_QUESTION);
+
+      if (alwaysRandomizeTypes.contains(item.getTypeId()) ||
+              (randomize && !neverRandomizeTypes.contains(item.getTypeId())))
       {
             ArrayList shuffled = new ArrayList();
             Iterator i1 = text.getAnswerArraySorted().iterator();
@@ -1459,8 +1462,9 @@ public class DeliveryActionListener
 			agentString = getAgentString();
 		}
 
+        String itemText = (item.getText() == null) ? "" : item.getText();
         Collections.shuffle(shuffled, 
-        		new Random( (long) item.getText().hashCode() + (getAgentString() + "_" + item.getItemId().toString()).hashCode()));
+        		new Random( (long) itemtext.hashCode() + (getAgentString() + "_" + item.getItemId().toString()).hashCode()));
         /*
         if (item.getTypeId().equals(TypeIfc.MATCHING))
         {
