@@ -36,7 +36,7 @@
 								#end     
 								</select>
 							#else
-								<a href="$switchRoleUrl" id="roleSwitchAnchor"><span>${rloader.rs_enterRoleSwap} $roleUrlValue ${rloader.rs_view}</span></a>
+								<a href="$switchRoleUrl" id="roleSwitchAnchor" class="button active"><span>${rloader.rs_enterRoleSwap} $roleUrlValue ${rloader.rs_view}</span></a>
 							#end
 						#end
 						</div>
