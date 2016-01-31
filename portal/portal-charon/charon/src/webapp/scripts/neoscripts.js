@@ -458,6 +458,8 @@ jQuery(document).ready(function(){
         if (jQuery('#otherSiteList li:visible').length < 1 && jQuery('.otherSitesCategorList li:visible').length < 1) {
             jQuery('.norecords').remove();
             jQuery('#otherSiteSearch #noSearchResults').fadeIn('slow');
+        } else {
+          jQuery('#otherSiteSearch #noSearchResults').hide();
         }
     });
     // case insensitive version of :contains

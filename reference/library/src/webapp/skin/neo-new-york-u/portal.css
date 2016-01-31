@@ -766,7 +766,10 @@ ul#otherSiteList li a span, ul.otherSitesCategorList li a span {
 }
 #otherSiteSearch span#noSearchResults {
     padding-left: 10px;
-    color:#555;
+    color: #555;
+    position: absolute;
+    top: 80px;
+    left: 20px;
 }
 #otherSiteSearch #imgSearch {
     margin-left: 5px;
