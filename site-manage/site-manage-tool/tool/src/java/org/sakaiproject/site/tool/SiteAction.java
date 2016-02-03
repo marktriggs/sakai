@@ -4333,6 +4333,10 @@ public class SiteAction extends PagedResourceActionII {
 		List providerCourseList = SiteParticipantHelper.getProviderCourseList((String) state.getAttribute(STATE_SITE_INSTANCE_ID));
 		if (providerCourseList != null && providerCourseList.size() > 0) {
 			rv = true;
+
+			// CLASSES-455 CLASSES-2030 NYU Change - sort course list by id
+			Collections.sort(providerCourseList);
+
 			state.setAttribute(SITE_PROVIDER_COURSE_LIST, providerCourseList);
 			
 			Hashtable<String, String> sectionTitles = new Hashtable<String, String>();
@@ -4354,10 +4358,6 @@ public class SiteAction extends PagedResourceActionII {
 				}
 			}
 			context.put("providerCourseTitles", sectionTitles);
-
-                        // CLASSES-455 NYU Change - sort course list by id
-                        Collections.sort(providerCourseList);
-
 			context.put("providerCourseList", providerCourseList);
 		}
 
