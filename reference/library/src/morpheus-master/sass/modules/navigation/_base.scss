@@ -404,6 +404,25 @@ body.is-logged-out{
 	}
 }
 
+.view-all-sites-btn {
+	display: inline-block;
+	padding-right: 1em;
+	border-right: 1px solid $toolBorderColor;
+}
+
+.view-all-sites-btn a {
+	text-decoration: none;
+}
+
+.all-sites-icon, .all-sites-label {
+	display: inline-block;
+	vertical-align: middle;
+}
+
+.all-sites-icon {
+	font-size: 16pt;
+}
+
 #linkNav{
 	ul{
 		font-family: $header-font-family;

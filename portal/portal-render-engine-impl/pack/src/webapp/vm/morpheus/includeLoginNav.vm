@@ -4,12 +4,18 @@
 
     #if (!${loginTopLogin})
 
+        <div class="Mrphs-sitesNav__menuitem view-all-sites-btn">
+            <a href="javascript:void(0);" title="${rloader.sit_allsites}" role="menuitem" aria-haspopup="true">
+                <i class="fa fa-th all-sites-icon"></i> <span class="all-sites-label">${rloader.sit_worksites}</span>
+            </a>
+        </div>
+
         <ul id="loginLinks" class="Mrphs-userNav">
 
                 #foreach ( $site in $tabsSites.tabsSites )
 
                     #if (${site.isMyWorkspace})
-                        
+
                         <li class="Mrphs-userNav__popup js-toggle-user-nav" aria-haspopup="true">
 
                                 #if (${displayUserloginInfo})
