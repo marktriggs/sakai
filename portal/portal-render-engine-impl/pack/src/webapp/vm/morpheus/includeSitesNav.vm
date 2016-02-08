@@ -26,7 +26,6 @@
             #end ## END of IF (${site.isMyWorkspace})
 
         #end ## END of FOREACH ( $site in $tabsSites.tabsSites )
-    
     </ul>
 
 </nav> <!-- /Mrphs-sitesNav -->
