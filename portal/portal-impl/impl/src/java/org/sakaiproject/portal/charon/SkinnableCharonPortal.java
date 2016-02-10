@@ -102,6 +102,7 @@ import org.sakaiproject.portal.charon.handlers.SamlLoginHandler;
 import org.sakaiproject.portal.charon.handlers.PopupHandler;
 import org.sakaiproject.portal.charon.handlers.YouTubeHandler;
 import org.sakaiproject.portal.charon.handlers.SystemAlertHandler;
+import org.sakaiproject.portal.charon.handlers.GenerateBugReportHandler;
 import org.sakaiproject.portal.charon.site.PortalSiteHelperImpl;
 import org.sakaiproject.portal.render.api.RenderResult;
 import org.sakaiproject.portal.render.cover.ToolRenderService;
@@ -2279,6 +2280,7 @@ public class SkinnableCharonPortal extends HttpServlet implements Portal
 		addHandler(new JoinHandler());
 		addHandler(new YouTubeHandler());
 		addHandler(new SystemAlertHandler());
+		addHandler(new GenerateBugReportHandler());
 	}
 
 	/**
