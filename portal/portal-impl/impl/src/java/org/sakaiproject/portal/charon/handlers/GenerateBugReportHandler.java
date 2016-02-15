@@ -6,7 +6,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.portal.api.PortalHandlerException;
 import org.sakaiproject.tool.api.Session;
-
+import org.sakaiproject.component.cover.ServerConfigurationService;
+import org.sakaiproject.tool.cover.SessionManager;
 
 public class GenerateBugReportHandler extends BasePortalHandler
 {
@@ -33,7 +34,13 @@ public class GenerateBugReportHandler extends BasePortalHandler
     Session session) throws PortalHandlerException
   {
     if ((parts.length == 2) && (parts[1].equals(GenerateBugReportHandler.URL_FRAGMENT))) {
-      throw new RuntimeException("Free bug report!");
+      if (!ServerConfigurationService.getBoolean("generatebugreport.enabled", false)) {
+        log.info("No bug report generated because generatebugreport.enabled isn't set");
+      } else if (SessionManager.getCurrentSessionUserId() == null) {
+        log.info("No bug report generated because user isn't logged in");
+      } else {
+        throw new RuntimeException("Free bug report!");
+      }
     }
 
     return NEXT;
