@@ -160,8 +160,12 @@
                         'roster_header');
             
                 if (roster.site.siteGroups.length > 0) {
+                    // CLASSES-2072 sort groups by title alphabetically
+                    var sortedGroups = roster.site.siteGroups.sort(function(a, b) {
+                      return a.title.localeCompare(b.title);
+                    });
                     roster.render('section_filter',
-                            { 'groupToViewText': roster.groupToViewText, 'siteGroups': roster.site.siteGroups },
+                            { 'groupToViewText': roster.groupToViewText, 'siteGroups': sortedGroups },
                             'roster_section_filter');
                     
                 } else {
