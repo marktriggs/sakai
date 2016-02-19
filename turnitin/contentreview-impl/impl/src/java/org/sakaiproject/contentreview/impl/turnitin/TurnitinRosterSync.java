@@ -272,7 +272,8 @@ public class TurnitinRosterSync {
 			log.debug("User " + userId + " has no last name");
 			throw new SubmissionException ("User has no last name");
 		}
-		String dis = turnitinConn.isInstructorAccountNotified() ? "1" : "0";
+		log.debug("NYU-DEBUG-TII -- addInstructor() -- turnitinConn.isInstructorAccountNotified(): |" + turnitinConn.isInstructorAccountNotified() + "|");
+		String dis = turnitinConn.isInstructorAccountNotified() ? "0" : "1";
 
 		Document document = null;
 

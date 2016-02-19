@@ -1,6 +1,6 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/contrib/turnitin/branches/sakai-10.x/contentreview-impl/impl/src/java/org/sakaiproject/contentreview/impl/turnitin/TurnitinReviewServiceImpl.java $
- * $Id: TurnitinReviewServiceImpl.java 87258 2014-11-13 07:46:04Z stephen.marquard@uct.ac.za $
+ * $URL$
+ * $Id$
  ***********************************************************************************
  *
  * Copyright (c) 2006 Sakai Foundation
@@ -1275,7 +1275,7 @@ public List<ContentReviewItem> getItemsByContentId(String contentId) {
 				"cid", cid,
 				"tem", tem,
 				"ctl", ctl,
-				"dis", studentAccountNotified ? "1" : "0",
+				"dis", studentAccountNotified ? "0" : "1",
 				"uem", uem,
 				"ufn", ufn,
 				"uln", uln,
@@ -1602,13 +1602,14 @@ public List<ContentReviewItem> getItemsByContentId(String contentId) {
 			String assign = getAssignmentTitle(currentItem.getTaskId());
 			String ctl = currentItem.getSiteId();
 
+			log.debug("NYU-DEBUG-TII -- processQueue() -- sendSubmissionNotification: |" + sendSubmissionNotification + "|");
 			Map params = TurnitinAPIUtil.packMap( turnitinConn.getBaseTIIOptions(),
 					"assignid", assignid,
 					"uid", uid,
 					"cid", cid,
 					"assign", assign,
 					"ctl", ctl,
-					"dis", Integer.valueOf(sendSubmissionNotification).toString(),
+					"dis", ( sendSubmissionNotification == 1 ) ? "0" : "1",
 					"fcmd", fcmd,
 					"fid", fid,
 					"ptype", ptype,
