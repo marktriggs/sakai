@@ -3201,6 +3201,7 @@ public class SimplePageBean {
 	       case SimplePageItem.COMMENTS:
 	       case SimplePageItem.QUESTION:
 	       case SimplePageItem.STUDENT_CONTENT:
+	       case SimplePageItem.SCORM:
 		   return getLBItemGroups(i); // for all native LB objects
 	       default:
 	    	   return null;
@@ -3384,6 +3385,7 @@ public class SimplePageBean {
 	   case SimplePageItem.COMMENTS:
 	   case SimplePageItem.QUESTION:
 	   case SimplePageItem.STUDENT_CONTENT:
+	   case SimplePageItem.SCORM:
 	       return setLBItemGroups(i, groups);
 	   }
 	   if (lessonEntity != null) {
