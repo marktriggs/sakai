@@ -1049,15 +1049,21 @@ ul#otherSiteList li a span, ul.otherSitesCategorList li a span {
 #siteStatus {
     text-transform: capitalize;
     clear: both;
-    color: #00acda;
+    color: rgb(156,131,33);
     font-size: small;
     font-weight: bold;
     line-height: 130%;
-    padding: 10px 3px;
+    padding: 10px 5px;
     border: 1px solid #DBDCDE;
     border-width: 0 0 1px 0;
     text-align: center;
     margin: 0;
+    background-color: rgb(254,245,205);
+}
+#siteStatusMessage:before {
+    font-family: 'nyu-classes-icons';
+    content: '\e01b';
+    margin-right: 5px;
 }
 
 #siteStatusSoftlyDeleted {
