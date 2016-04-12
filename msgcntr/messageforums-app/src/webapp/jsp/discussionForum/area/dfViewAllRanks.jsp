@@ -26,7 +26,7 @@
 <%-- CLASSES-2188 --%>
 <div style="background-color: rgb(254,245,205); padding: 10px 10%; margin: 10px 5% 0; text-align:center;">
   <strong>Note:</strong> The Ranks feature will be retired at the end of the Spring 2016 semester. Please contact
-  <a href="mailto:askits@nyu.edu">askits@nyu.edu</a> if you have any questions or concerns.
+  <a href="mailto:askit@nyu.edu">askit@nyu.edu</a> if you have any questions or concerns.
 </div>
 
     <h:form id="addRank">
