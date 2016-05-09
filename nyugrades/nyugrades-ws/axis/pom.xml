@@ -11,7 +11,7 @@
   <parent>
     <groupId>edu.nyu.classes.nyugrades</groupId>
     <artifactId>nyugrades-base</artifactId>
-    <version>10.0</version>
+    <version>10.7</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
   
@@ -77,13 +77,13 @@
     <dependency>
       <groupId>org.sakaiproject.edu-services.gradebook</groupId>
       <artifactId>gradebook-service-api</artifactId>
-      <version>10.2</version>
+      <version>10.7</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>edu.nyu.classes.nyugrades</groupId>
       <artifactId>nyugrades-api</artifactId>
-      <version>10.0</version>
+      <version>10.7</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>

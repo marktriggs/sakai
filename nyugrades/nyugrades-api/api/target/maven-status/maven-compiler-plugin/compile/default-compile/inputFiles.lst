@@ -1,0 +1,10 @@
+/mnt/ssd/cle/2.10-upgrade/10.7/trunk/nyugrades/nyugrades-api/api/src/java/edu/nyu/classes/nyugrades/api/MultipleSitesFoundForSectionException.java
+/mnt/ssd/cle/2.10-upgrade/10.7/trunk/nyugrades/nyugrades-api/api/src/java/edu/nyu/classes/nyugrades/api/MultipleSectionsMatchedException.java
+/mnt/ssd/cle/2.10-upgrade/10.7/trunk/nyugrades/nyugrades-api/api/src/java/edu/nyu/classes/nyugrades/api/GradePullDisabledException.java
+/mnt/ssd/cle/2.10-upgrade/10.7/trunk/nyugrades/nyugrades-api/api/src/java/edu/nyu/classes/nyugrades/api/SectionNotFoundException.java
+/mnt/ssd/cle/2.10-upgrade/10.7/trunk/nyugrades/nyugrades-api/api/src/java/edu/nyu/classes/nyugrades/api/SiteNotFoundForSectionException.java
+/mnt/ssd/cle/2.10-upgrade/10.7/trunk/nyugrades/nyugrades-api/api/src/java/edu/nyu/classes/nyugrades/api/Grade.java
+/mnt/ssd/cle/2.10-upgrade/10.7/trunk/nyugrades/nyugrades-api/api/src/java/edu/nyu/classes/nyugrades/api/NYUGradesSessionService.java
+/mnt/ssd/cle/2.10-upgrade/10.7/trunk/nyugrades/nyugrades-api/api/src/java/edu/nyu/classes/nyugrades/api/GradeSet.java
+/mnt/ssd/cle/2.10-upgrade/10.7/trunk/nyugrades/nyugrades-api/api/src/java/edu/nyu/classes/nyugrades/api/NYUGradesService.java
+/mnt/ssd/cle/2.10-upgrade/10.7/trunk/nyugrades/nyugrades-api/api/src/java/edu/nyu/classes/nyugrades/api/DBService.java
